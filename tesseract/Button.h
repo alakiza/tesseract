@@ -4,11 +4,16 @@
 	class Button
 	{
 	private:
-
+		int fpin;
 	public:
-		Button()
+		Button(const int pin)
 		{
 
+		}
+
+		bool KeyPressed()
+		{
+			
 		}
 
 		~Button()

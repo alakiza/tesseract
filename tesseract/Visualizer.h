@@ -4,16 +4,17 @@
 	class Visualizer
 	{
 	private:
+		int fDataPin;
 
 	public:
-		Visualizer()
+		Visualizer(const int DataPin)
 		{
 
 		}
 
 		~Visualizer()
 		{
-			
+
 		}
 	};
 
