@@ -8,7 +8,9 @@
 
 		char fPressCount;
 		char fMaxPressCountToValid;
-		bool fState;
+		bool fClick;
+
+    bool Clicked;
 
 		bool fKeyPress;
 
@@ -17,6 +19,7 @@
 			fpin = pin;
 			fKeyPress = false;
 			fPressCount = 0;
+      fClick = false;
 
 			pinMode(fpin, INPUT);
 		}
@@ -37,7 +40,7 @@
 
 		void ScanState()
 		{
-			if ( fState == (!digitalRead(fpin)) ) 
+			if ( fClick == (!digitalRead(fpin)) ) 
 			{
 			    fPressCount = 0;
 			}
@@ -47,17 +50,30 @@
 
 			    if ( fPressCount >= fMaxPressCountToValid ) 
 			    {
-            		fKeyPress = fState;
-			      	fState = !fState;
+             	fKeyPress = fClick;
+              Clicked = !fClick;
+			      	fClick = !fClick;
 			      	fPressCount = 0;
 			    }   
 			}
 		}
 
-		bool Pressed()
+		inline bool Pressed()
 		{
 			return fKeyPress;
 		}
+
+   inline bool Click()
+   {
+    bool tmp = Clicked;
+    if(tmp) Clicked = false;
+    return tmp;
+   }
+
+   void ResetClick()
+   {
+       fClick = false;
+   }
 
 		char pin()
 		{
