@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "Visualizer.h"
 #include "Button.h"
 
@@ -7,11 +8,21 @@
 #define BUTTON_RIGHT 1
 #define BUTTON_ENTER 2
 
+class Gereb
+{
+  private:
+  
+  public:
+  Gereb();
+  ~Gereb();
+};
+
 Button** buttons;
 
 void ScanButtons()
 {
 	for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i]->ScanState();
+    
 }
 
 void setup() 
