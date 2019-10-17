@@ -25,19 +25,20 @@
 
 			pixels = new Adafruit_NeoPixel(fLEDCount, fDataPin, NEO_GRB + NEO_KHZ800);
 			pixels->begin();
+			Clear();
 		}
 
-		Show()
+		void Show()
 		{
-			pixels->Show();
+			pixels->show();
 		}
 
-		Clear()
+		void Clear()
 		{
 			pixels->clear();
 		}
 
-		SetAllPixelColor(char red, char green, char blue)
+		void SetAllPixelColor(char red, char green, char blue)
 		{
 			for(int i = 0; i < fLEDCount; ++i)
 			{
@@ -45,12 +46,12 @@
 			}
 		}
 
-		SetPixelColor(int num, char red, char green, char blue)
+		void SetPixelColor(int num, char red, char green, char blue)
 		{
-			pixels->setPixelColor(num, pixels->color(red, green, blue));
+			pixels->setPixelColor(num, pixels->Color(red, green, blue));
 		}
 
-		SetPixelColor(int from, int to, char red, char green, char blue)
+		void SetPixelColor(int from, int to, char red, char green, char blue)
 		{
 			for(int i = from; i < to; ++i)
 			{
@@ -60,7 +61,7 @@
 
 		~Visualizer()
 		{
-			delete pixels;
+			//delete pixels;
 		}
 	};
 

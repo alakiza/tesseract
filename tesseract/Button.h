@@ -14,27 +14,30 @@
 
 		bool fKeyPress;
 
-		inline void BaseInit(const char& pin)
+		inline void BaseInit(const char& pin, const bool PULLUP)
 		{
 			fpin = pin;
 			fKeyPress = false;
 			fPressCount = 0;
       fClick = false;
 
-			pinMode(fpin, INPUT);
+			if(PULLUP) 
+				pinMode(fpin, INPUT_PULLUP);
+			else
+				pinMode(fpin, INPUT);
 		}
 
 	public:
 
-		Button(const char pin)
+		Button(const char pin, const bool PULLUP)
 		{
-			BaseInit(pin);
+			BaseInit(pin, PULLUP);
 			fMaxPressCountToValid = 15;
 		}
 
-		Button(const char pin, const char MaxPressCountToValid)
+		Button(const char pin, const char MaxPressCountToValid, const bool PULLUP)
 		{
-			BaseInit(pin);
+			BaseInit(pin, PULLUP);
 			fMaxPressCountToValid = MaxPressCountToValid;
 		}
 
