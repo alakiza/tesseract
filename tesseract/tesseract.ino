@@ -18,12 +18,15 @@ class Gereb
 };
 
 Button** buttons;
+Visualizer visualizer(8, 27);
 
 void ScanButtons()
 {
 	for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i]->ScanState();
     
 }
+
+#include "ButtonCowboy.h"
 
 void setup() 
 {
