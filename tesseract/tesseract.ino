@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "Visualizer.h"
+#include "cube.h"
 #include "Button.h"
 
 #define BUTTON_COUNT 3
@@ -10,6 +11,7 @@
 
 Button** buttons;
 Visualizer visualizer(8, 27);
+Cube cube(3, 3, 3, &visualizer);
 #include "FactoryToos.h"
 
 void ScanButtons()
