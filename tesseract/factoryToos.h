@@ -16,7 +16,7 @@ IBasicToos* FactoryToos::Get()
 	{
 		case 0: res = new RandomToos();
 				break;
-		case 1: res = new FactoryToos();
+		case 1: res = new ButtonCowboy();
 				break;
 	}
 	return res;
