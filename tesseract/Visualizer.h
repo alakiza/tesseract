@@ -25,6 +25,7 @@
 
 			pixels = new Adafruit_NeoPixel(fLEDCount, fDataPin, NEO_GRB + NEO_KHZ800);
 			pixels->begin();
+			Clear();
 		}
 
 		void Show()
@@ -60,7 +61,7 @@
 
 		~Visualizer()
 		{
-			delete pixels;
+			//delete pixels;
 		}
 	};
 

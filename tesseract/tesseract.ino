@@ -8,17 +8,9 @@
 #define BUTTON_RIGHT 1
 #define BUTTON_ENTER 2
 
-class Gereb
-{
-  private:
-  
-  public:
-  Gereb();
-  ~Gereb();
-};
-
 Button** buttons;
 Visualizer visualizer(8, 27);
+#include "FactoryToos.h"
 
 void ScanButtons()
 {
@@ -30,18 +22,27 @@ void ScanButtons()
 
 void setup() 
 {
-  buttons = new Button*[BUTTON_COUNT];
-  for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i] = new Button(4+i);
+    buttons = new Button*[BUTTON_COUNT];
+    for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i] = new Button(4+i, true);
 
-  pinMode(13, OUTPUT);
+    pinMode(13, OUTPUT);
+    randomSeed(22957);
 }
 
 void loop() 
 {
-	ScanButtons();
-	if(buttons[BUTTON_LEFT]->Pressed()) 
-		digitalWrite(13, HIGH);
-	else
-		digitalWrite(13, LOW);
-   delay(1);
+	IBasicToos* toos = FactoryToos::Get();
+	int res = toos->Run();
+
+	while(true)
+	{
+		ScanButtons();
+		if(res) 
+			digitalWrite(13, HIGH);
+		else
+			digitalWrite(13, LOW);
+		visualizer.SetAllPixelColor(random(255), random(255), random(255));
+		visualizer.Show();
+	   delay(100);
+	}
 }
