@@ -18,8 +18,6 @@ void ScanButtons()
     
 }
 
-#include "ButtonCowboy.h"
-
 void setup() 
 {
     buttons = new Button*[BUTTON_COUNT];

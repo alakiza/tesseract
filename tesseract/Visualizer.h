@@ -36,6 +36,7 @@
 		void Clear()
 		{
 			pixels->clear();
+			Show();
 		}
 
 		void SetAllPixelColor(char red, char green, char blue)

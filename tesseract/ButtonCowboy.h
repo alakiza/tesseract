@@ -22,17 +22,17 @@ int ButtonCowboy::Run()
 {	
 	visualizer.SetPixelColor(0, 8, 255, 255, 0);
 	visualizer.Show();
-	delay(500);
+	delay(1000);
 	visualizer.SetPixelColor(9, 17, 255, 255, 0);
 	visualizer.Show();
-	delay(500);
+	delay(1000);
 	visualizer.SetPixelColor(18, 26, 255, 255, 0);
 	visualizer.Show();
-	delay(500);
+	delay(1000);
 	visualizer.SetAllPixelColor(255, 255, 255);
 	visualizer.Show();
-	delay(500);
-	visualizer.Show();
+	delay(1000);
+	visualizer.Clear();
 
 	// for (int player = 0; player < PLAYER_COUNT; ++player)  
 	// {
