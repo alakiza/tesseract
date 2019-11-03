@@ -10,20 +10,22 @@
 #define BUTTON_ENTER 2
 
 Button** buttons;
-Visualizer visualizer(8, 27);
-Cube cube(3, 3, 3, &visualizer);
-#include "FactoryToos.h"
+Visualizer* visualizer;
+Cube* cube;
 
 void ScanButtons()
 {
-	for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i]->ScanState();
-    
+	for(int i = 0; i < BUTTON_COUNT; ++i) buttons[i]->ScanState();    
 }
+
+#include "FactoryToos.h"
 
 void setup() 
 {
     buttons = new Button*[BUTTON_COUNT];
-    for(char i = 0; i < BUTTON_COUNT; ++i) buttons[i] = new Button(4+i, true);
+    visualizer = new Visualizer(8, 27);
+    cube = new Cube(3, 3, 3, visualizer);
+    for(int i = 0; i < BUTTON_COUNT; ++i) buttons[i] = new Button(2+i, false);
 
     pinMode(13, OUTPUT);
     randomSeed(22957);
@@ -33,16 +35,11 @@ void loop()
 {
 	IBasicToos* toos = FactoryToos::Get();
 	int res = toos->Run();
-
 	while(true)
 	{
-		ScanButtons();
-		if(res) 
-			digitalWrite(13, HIGH);
-		else
-			digitalWrite(13, LOW);
-		visualizer.SetAllPixelColor(random(255), random(255), random(255));
-		visualizer.Show();
-	   delay(100);
+    if(res) visualizer->SetAllPixelColor(255, 255, 255);
+		visualizer->SetAllPixelColor(random(255), random(255), random(255));
+		visualizer->Show();
+    delay(1000);
 	}
 }

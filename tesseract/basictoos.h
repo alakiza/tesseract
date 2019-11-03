@@ -4,10 +4,7 @@
 class IBasicToos
 {
 public:
-	int Run()
-	{
-
-	};
+	virtual int Run() = 0;
 };
 
 #endif

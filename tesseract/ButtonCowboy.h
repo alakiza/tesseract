@@ -21,19 +21,19 @@ ButtonCowboy::ButtonCowboy()
 
 int ButtonCowboy::Run()
 {	
-	visualizer.SetPixelColor(0, 8, 255, 255, 0);
-	visualizer.Show();
+	visualizer->SetPixelColor(0, 8, 64, 64, 0);
+	visualizer->Show();
 	delay(1000);
-	visualizer.SetPixelColor(9, 17, 255, 255, 0);
-	visualizer.Show();
+	visualizer->SetPixelColor(9, 17, 128, 128, 0);
+	visualizer->Show();
 	delay(1000);
-	visualizer.SetPixelColor(18, 26, 255, 255, 0);
-	visualizer.Show();
+	visualizer->SetPixelColor(18, 26, 255, 255, 0);
+	visualizer->Show();
 	delay(1000);
-	visualizer.SetAllPixelColor(255, 255, 255);
-	visualizer.Show();
+	visualizer->SetAllPixelColor(255, 255, 255);
+	visualizer->Show();
 	delay(1000);
-	visualizer.Clear();
+	visualizer->Clear();
 
 	// for (int player = 0; player < PLAYER_COUNT; ++player)  
 	// {

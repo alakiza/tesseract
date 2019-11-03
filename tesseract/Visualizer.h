@@ -1,6 +1,6 @@
 #ifndef VISUALIZER_H
 #define VISUALIZER_H
-#include "Adafruit_NeoPixel.h";
+#include "Adafruit_NeoPixel.h"
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
@@ -10,8 +10,8 @@
 		static long FromRGB(unsigned char r, unsigned char g, unsigned char b)
 		{
 			long res = r;
-			res = res << 8 + g;
-			res = res << 8 + b;
+			res = (res << 8) + g;
+			res = (res << 8) + b;
 			return res;
 		};
 	};
@@ -98,7 +98,7 @@
 
 	void Visualizer::SetPixelColor(int from, int to, char red, char green, char blue)
 	{
-		for(int i = from; i < to; ++i)
+		for(int i = from; i <= to; ++i)
 		{
 			SetPixelColor(i, red, green, blue);
 		}
