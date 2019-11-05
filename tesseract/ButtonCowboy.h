@@ -33,7 +33,7 @@ int ButtonCowboy::Run()
 	visualizer->SetAllPixelColor(255, 255, 255);
 	visualizer->Show();
 	delay(1000);
-	visualizer->Clear();
+	visualizer->Clear(true);
 
 	// for (int player = 0; player < PLAYER_COUNT; ++player)  
 	// {

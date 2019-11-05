@@ -35,7 +35,7 @@
 
 		void SetAllPixelColor(char red, char green, char blue);
 		void SetAllPixelColor(long color);
-		void Clear();
+		void Clear(bool show);
 
 		~Visualizer();
 	};
@@ -51,7 +51,7 @@
 
 		pixels = new Adafruit_NeoPixel(fLEDCount, fDataPin, NEO_GRB + NEO_KHZ800);
 		pixels->begin();
-		Clear();
+		Clear(true);
 	}
 
 	void Visualizer::Show()
@@ -59,10 +59,10 @@
 		pixels->show();
 	}
 
-	void Visualizer::Clear()
+	void Visualizer::Clear(bool show)
 	{
 		pixels->clear();
-		Show();
+    if(show) Show();
 	}
 
 	void Visualizer::SetAllPixelColor(char red, char green, char blue)

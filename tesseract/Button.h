@@ -89,4 +89,80 @@
 		}
 	};
 
+  class JoyStick
+  {
+    private:
+      char fPinAxisX;
+      char fPinAxisY;
+      char fPinButton;
+      int fAxisX;
+      int fAxisY;
+
+      Button* button;
+    public:
+      JoyStick(int PinAxisX, int PinAxisY, char PinButton);
+      
+      void ScanState();
+      
+      inline int AxisX()
+      {
+        return fAxisX;
+      }
+      inline int AxisY()
+      {
+        return fAxisY;
+      }
+      
+      inline bool Pressed()
+      {
+        return button->Pressed();
+      }
+      inline bool Click()
+      {
+        return button->Click();
+      }
+      inline void ResetClick()
+      {
+        button->ResetClick();
+      }
+      inline char pinAxisX()
+      {
+        return fPinAxisX;
+      }
+      inline char pinAxisY()
+      {
+        return fPinAxisY;
+      }
+      inline char pinButton()
+      {
+        return fPinButton;
+      }
+      
+      ~JoyStick();
+  };
+
+  JoyStick::JoyStick(int PinAxisX, int PinAxisY, char PinButton)
+  {
+    fPinAxisX = PinAxisX;
+    fPinAxisY = PinAxisY;
+    fPinButton = PinButton;
+
+    pinMode(fPinAxisX, INPUT_PULLUP);
+    pinMode(fPinAxisY, INPUT_PULLUP);
+    button = new Button(fPinButton, false);
+  }
+  
+  void JoyStick::ScanState()
+  {
+    fAxisX = analogRead(fPinAxisX) - 512;
+    fAxisY = analogRead(fPinAxisY) - 512;
+    button->ScanState();
+  }
+
+  JoyStick::~JoyStick()
+  {
+    delete button;
+  }
+  
+
 #endif
