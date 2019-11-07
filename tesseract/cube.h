@@ -35,9 +35,15 @@ public:
 	{ 
 		dimensions[x][y][z] = color;
 		bool NeedToBackDirection = ((y % 2) && !(z % 2)) || (!(y % 2) && (z % 2));  
-		int num = z*flengthX*flengthY + y*flengthX;
+    int num;
+    
+    if(z%2) 
+      num = z*flengthX*flengthY + (flengthY-1-y)*flengthX;
+    else
+      num = z*flengthX*flengthY + y*flengthX;
+      
 		if(NeedToBackDirection)
-			num = num + flengthX - x;
+			num = num + flengthX - 1 - x;
 		else
 			num = num + x;
 		fVisualizer->SetPixelColor(num, color);
@@ -56,6 +62,9 @@ public:
 	int LenX(){return flengthX;}
 	int LenY(){return flengthY;}
 	int LenZ(){return flengthZ;}
+
+  void Clear(bool Showed){fVisualizer->Clear(Showed);}
+  void Show(){fVisualizer->Show();}
 
 	~Cube();
 };

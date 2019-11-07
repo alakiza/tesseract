@@ -52,13 +52,21 @@ void loop()
     
     //if(joySticks[0]->Click()) ++countLeft;
     //if(joySticks[1]->Click()) ++countRight;
-    countLeft  = (joySticks[0]->AxisX()+512)/128;
-    countRight = (joySticks[1]->AxisX()+512)/128;
-
-    visualizer->Clear(false);
-    visualizer->SetPixelColor(0, countLeft, 255, 1, 1);
-    visualizer->SetPixelColor(18, 18+countRight, 1, 1, 255);
-    visualizer->Show();
-    delay(1);
+//    countLeft  = (joySticks[0]->AxisX()+512)/127;
+//    countRight = (joySticks[1]->AxisX()+512)/127;
+    cube->Clear(false);
+    for(int z = 0; z < 3; ++z)
+      for(int y = 0; y < 3; ++y)
+        for(int x = 0; x < 3; ++x)
+        {
+          cube->SetPixelColor(x, y, z, Color::FromRGB(255, 255, 255));
+          cube->Show();
+          delay(500);
+        }
+//    visualizer->Clear(false);
+//    visualizer->SetPixelColor(0, countLeft, 255, 1, 1);
+//    visualizer->SetPixelColor(18, 18+countRight, 1, 1, 255);
+//    visualizer->Show();
+//    delay(1);
 	}
 }
