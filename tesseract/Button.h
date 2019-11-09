@@ -19,7 +19,8 @@
 			fpin = pin;
 			fKeyPress = false;
 			fPressCount = 0;
-      fClick = false;
+      fClick = true;
+      Clicked = false;
 
 			if(PULLUP) 
 				pinMode(fpin, INPUT_PULLUP);
@@ -75,7 +76,10 @@
 
    void ResetClick()
    {
-       fClick = false;
+      fKeyPress = false;
+      fPressCount = 0;
+      fClick = true;
+      Clicked = false;
    }
 
 		char pin()
