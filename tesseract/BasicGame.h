@@ -1,5 +1,5 @@
-#ifndef LCD_HELPER_H
-#define LCD_HELPER_H
+#ifndef BASIC_GAME_H
+#define BASIC_GAME_H
 
 class IBasicGame
 {
