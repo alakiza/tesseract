@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <WORKSPACE>
  <FRAME activewindow="0">
-  <PLACEMENT>2c0000000200000003000000fffffffffffffffffffffffffffffffff9ffffff00000000e5040000c0030000</PLACEMENT>
+  <PLACEMENT>2c00000002000000030000000083ffff0083fffffffffffffffffffff9ffffff00000000e5040000c0030000</PLACEMENT>
   <WINDOW type="default" module="ISIS"/>
  </FRAME>
  <MODULE name="VSMDEBUG">
@@ -209,7 +209,7 @@
      <ITEM name="TopLineAddress">00000020</ITEM>
     </PROPERTIES>
    </POPUP>
-   <POPUP w="30" x="38" flags="00000008" y="128" h="16" pid="3" iid="5">
+   <POPUP w="226" x="38" flags="00000008" y="128" h="210" pid="3" iid="5">
     <PROPERTIES/>
    </POPUP>
    <POPUP w="8" x="58" flags="0000000a" y="148" h="1" pid="10" iid="5">

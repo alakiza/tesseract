@@ -29,6 +29,29 @@ long*** GenerateMatrix(int MaxX, int MaxY, int MaxZ)
   return res;
 }
 
+void CopyMatrix(long*** to, long*** from, int lenX, int lenY, int lenZ)
+{
+  for(int i = 0; i < lenX; ++i)
+    for(int j = 0; j < lenY; ++j)
+      for(int k = 0; k < lenZ; ++k)
+      {
+        to[i][j][k] = from[i][j][k];
+      }
+}
+
+void FreeMatrix(long*** matrix, int lenX, int lenY, int lenZ)
+{
+  for(int i = 0; i < lenX; ++i)
+  {
+    for(int j = 0; j < lenY; ++j)
+    {
+      delete[] matrix[i][j];
+    }
+    delete[] matrix[i];
+  }
+  delete[] matrix;
+}
+
 class Cube
 {
 private:
@@ -42,7 +65,7 @@ private:
 		flengthX = MaxX;
 		flengthY = MaxY;
 		flengthZ = MaxZ;
-		dimensions = GenerateMatrix(flengthX, flendthY, flengthZ);
+		dimensions = GenerateMatrix(flengthX, flengthY, flengthZ);
 	}
 public:
 	Cube(int maxX, int MaxY, int MaxZ, Visualizer* visualizer);

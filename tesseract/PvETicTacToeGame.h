@@ -3,7 +3,7 @@
 #include "BasicGame.h"
 #include "Button.h"
 
-    bool gameEnd;
+    bool gameEnd = 0;
     long*** stateMatrix;
     
     class Player
@@ -28,6 +28,8 @@
         }
         
         void CheckControls();
+        bool MakeTurn();
+        
     };
     
     void Player::CheckControls()
@@ -39,9 +41,25 @@
         if(fJoyStick->AxisY() < -478) --fCurrentPosition.Y;
         
         if(fCurrentPosition.X >= cube->LenX()) fCurrentPosition.X = 0;
+        if(fCurrentPosition.X < 0) fCurrentPosition.X = cube->LenX()-1;
+        
         if(fCurrentPosition.Y >= cube->LenY()) fCurrentPosition.Y = 0;
+        if(fCurrentPosition.Y < 0) fCurrentPosition.Y = cube->LenY()-1;
         
     }
+
+    class ArtificialIntelligence
+    {
+    private:
+      Player* fPlayer;
+    public:
+      ArtificialIntelligence();
+      
+      Point3D Calculate();
+      void MakeTurn();
+
+      ~ArtificialIntelligence();
+    };
     
     class PvE_TicTacToe_Game : public IBasicGame
     {
@@ -49,6 +67,7 @@
         Player** fPlayer;
     public:
         PvE_TicTacToe_Game();
+        int analyzeField();
         
         void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
         ~PvE_TicTacToe_Game();
@@ -65,25 +84,38 @@
     {
         int count = sizeof(fPlayer) / sizeof(Player*);
         for(--count ;count > 0; --count) delete fPlayer[count];
-        delete[] fPLayer;
+        delete[] fPlayer;
     }
     
     void PvE_TicTacToe_Game::Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor)
     {
-        fFirstColor = FirstColor;
-        fSecondColor = SecondColor;
+        fPlayer[0]->Color = FirstColor;
+        fPlayer[0]->fJoyStick = joySticks[0];
+        
+        fPlayer[1]->Color = SecondColor;
+        fPlayer[1]->fJoyStick = joySticks[1];
         
         stateMatrix = GenerateMatrix(3, 3, 3);
-		long*** VisibleMatrix = GenerateMatrix(3, 3, 3);
+		    long*** VisibleMatrix = GenerateMatrix(3, 3, 3);
         
         cube->SetPixelColor(stateMatrix, 3, 3, 3);
         cube->Show();
         
         while(!gameEnd)
         {
-            VisibleMatrix[
-            cube->SetPixelColor(stateMatrix, 3, 3, 3);
+            for(int i = 0; i < 1; ++i) fPlayer[i]->CheckControls();
+
+            
+            
+            CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
+            VisibleMatrix[fPlayer[0]->fCurrentPosition.X][fPlayer[0]->fCurrentPosition.Y][fPlayer[0]->fCurrentPosition.Z] = (fPlayer[0]->Color+0x007f7f7f) & 0x00ffffff;
+            cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
             cube->Show();
+
+            delay(100);
         }
+
+        FreeMatrix(VisibleMatrix, 3, 3, 3);
+        FreeMatrix(stateMatrix, 3, 3, 3);
     }
 #endif
