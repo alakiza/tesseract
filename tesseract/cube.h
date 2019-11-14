@@ -2,6 +2,33 @@
 #define CUBE_H
 #include "Visualizer.h"
 
+struct Point2D
+{
+  int X;
+  int Y;
+};
+
+struct Point3D : public Point2D
+{
+  int Z;
+};
+
+long*** GenerateMatrix(int MaxX, int MaxY, int MaxZ)
+{
+  long*** res = new long**[MaxX];
+  for(int i = 0; i < MaxX; ++i)
+  {
+    res[i] = new long*[MaxY];
+    for(int j = 0; j < MaxY; ++j)
+    { 
+      res[i][j] = new long[MaxZ];
+      for(int k = 0; k < MaxZ; ++k)
+        res[i][j][k] = 0;
+    }
+  }
+  return res;
+}
+
 class Cube
 {
 private:
@@ -15,17 +42,7 @@ private:
 		flengthX = MaxX;
 		flengthY = MaxY;
 		flengthZ = MaxZ;
-		dimensions = new long**[flengthX];
-		for(int i = 0; i < flengthX; ++i)
-		{
-			dimensions[i] = new long*[flengthY];
-			for(int j = 0; j < flengthY; ++j)
-			{ 
-				dimensions[i][j] = new long[flengthZ];
-				for(int k = 0; k < flengthZ; ++k)
-					dimensions[i][j][k] = 0;
-			}
-		}	
+		dimensions = GenerateMatrix(flengthX, flendthY, flengthZ);
 	}
 public:
 	Cube(int maxX, int MaxY, int MaxZ, Visualizer* visualizer);
@@ -48,7 +65,7 @@ public:
 			num = num + x;
 		fVisualizer->SetPixelColor(num, color);
 	};
-	void SetPixelColor(int*** StateMatrix, int MaxX, int MaxY, int MaxZ)
+	void SetPixelColor(long*** StateMatrix, int MaxX, int MaxY, int MaxZ)
 	{
 		for(int i = 0; i < MaxX; ++i)
 			for(int j = 0; j < MaxY; ++j)

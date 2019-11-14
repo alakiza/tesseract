@@ -39,7 +39,8 @@ void TimerInterrupt()
   ScanButtons();
 }
 
-#include "FactoryToos.h"
+#include "factoryToos.h"
+#include "factoryGames.h"
 
 void setup() 
 {
@@ -71,39 +72,43 @@ void loop()
 	IBasicToos* toos = FactoryToos::Get();
 	int res = toos->Run();
   delete toos;
-  int countLeft  = 0;
-  int countRight = 0;
-	while(true)
-	{
+
+  IBasicGame* game = FactoryGames::Get(0);
+  game->Run(res, 0x00007F00, 0x007F0000);
+//  int countLeft  = 0;
+//  int countRight = 0;
+//	while(true)
+//	{
     //if(joySticks[1]->Click()) ++countRight;
 //    countLeft  = (joySticks[0]->AxisX()+512)/127;
 //    countRight = (joySticks[1]->AxisX()+512)/127;
-    cube->Clear(false);
-    for(int z = 0; z < 3; ++z)
-      for(int y = 0; y < 3; ++y)
-        for(int x = 0; x < 3; ++x)
-        {
-          static int count = 0;
-          MsTimer2::stop();
-          if(joySticks[0]->Click()) 
-          {
-            lcd.clear();
-            lcd.setCursor(0, 0);
-            lcd.print(String(count++));
-            lcd.setCursor(0, 1);
-            lcd.print(F("Press any key..."));
-          } 
-          cube->SetPixelColor(x, y, z, Color::FromRGB(255, 255, 255));
-          cube->Show();
-          MsTimer2::start();
-          delay(50);
-        }
+//    cube->Clear(false);
+//    for(int z = 0; z < 3; ++z)
+//      for(int y = 0; y < 3; ++y)
+//        for(int x = 0; x < 3; ++x)
+//        {
+//          static int count = 0;
+//          MsTimer2::stop();
+//          if(joySticks[0]->Click()) 
+//          {
+//            lcd.clear();
+//            lcd.setCursor(0, 0);
+//            lcd.print(String(count++));
+//            lcd.setCursor(0, 1);
+//            lcd.print(F("Press any key..."));
+//          } 
+//          cube->SetPixelColor(x, y, z, Color::FromRGB(255, 255, 255));
+//          cube->Show();
+//          MsTimer2::start();
+//          delay(50);
+//        }
 //    visualizer->Clear(false);
 //    visualizer->SetPixelColor(0, countLeft, 255, 1, 1);
 //    visualizer->SetPixelColor(18, 18+countRight, 1, 1, 255);
 //    visualizer->Show();
 //    delay(1);
-	}
+//	}
+ delete game;
  delete cube;
  delete visualizer;
  for(int i = 0; i < JOY_STICK_COUNT; ++i) delete joySticks[i];
