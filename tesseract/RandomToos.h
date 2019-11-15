@@ -12,7 +12,7 @@ public:
 
 int RandomToos::Run()
 {
-	return random(0, 2);
+	return random(0, 1);
 }
 
 #endif

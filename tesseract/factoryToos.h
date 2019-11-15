@@ -9,7 +9,7 @@ public:
 	static IBasicToos* Get()
   {
     IBasicToos* res;
-    switch(random(0, 2))
+    switch(random(0, 1))
     {
       case 0: res = new RandomToos();
           break;

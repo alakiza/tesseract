@@ -64,7 +64,8 @@ void setup()
     MsTimer2::start();
     
     pinMode(13, OUTPUT);
-    randomSeed(22957);
+	//randomSeed(32064);
+    randomSeed(analogRead(A7));
 }
 
 void loop() 
