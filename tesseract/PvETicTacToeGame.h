@@ -28,7 +28,7 @@
         }
         
         void CheckControls();
-        bool MakeTurn();
+        bool TryMakeTurn(Point3D point);
         
     };
     
@@ -47,19 +47,49 @@
         if(fCurrentPosition.Y < 0) fCurrentPosition.Y = cube->LenY()-1;
         
     }
+    
+    void Player::CheckControls()
+    {
+        
+    }
+    
+    bool Player::TryMakeTurn(Point3D point)
+    {
+        
+    }
 
     class ArtificialIntelligence
     {
     private:
       Player* fPlayer;
     public:
-      ArtificialIntelligence();
+      ArtificialIntelligence(Player* player);
       
       Point3D Calculate();
-      void MakeTurn();
+      void MakeTurn(Point3D point);
 
       ~ArtificialIntelligence();
     };
+    
+    ArtificialIntelligence::ArtificialIntelligence(Player* player)
+    {
+        
+    }
+    
+    Point3D ArtificialIntelligence::Calculate()
+    {
+        
+    }
+    
+    void ArtificialIntelligence::MakeTurn(Point3D point)
+    {
+        
+    }
+    
+    ArtificialIntelligence::~ArtificialIntelligence()
+    {
+        
+    }
     
     class PvE_TicTacToe_Game : public IBasicGame
     {
