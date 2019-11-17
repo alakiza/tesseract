@@ -110,10 +110,10 @@ void loop()
 //    delay(1);
 //	}
  delete game;
- delete cube;
- delete visualizer;
- for(int i = 0; i < JOY_STICK_COUNT; ++i) delete joySticks[i];
- delete[] joySticks;
- for(int i = 0; i < BUTTON_COUNT; ++i) delete buttons[i];
- delete[] buttons;
+ //delete cube;
+ //delete visualizer;
+ //for(int i = 0; i < JOY_STICK_COUNT; ++i) delete joySticks[i];
+ //delete[] joySticks;
+ //for(int i = 0; i < BUTTON_COUNT; ++i) delete buttons[i];
+ //delete[] buttons;
 }
