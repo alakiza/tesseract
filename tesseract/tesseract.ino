@@ -39,7 +39,7 @@ void TimerInterrupt()
   ScanButtons();
 }
 
-#include "factoryToos.h"
+#include "factoryToss.h"
 #include "factoryGames.h"
 
 void setup() 
@@ -70,11 +70,11 @@ void setup()
 
 void loop() 
 {
-	IBasicToos* toos = FactoryToos::Get();
+	IToss* toos = FactoryToos::Get();
 	int res = toos->Run();
   delete toos;
 
-  IBasicGame* game = FactoryGames::Get(0);
+  IGameable* game = FactoryGames::Get(0);
   game->Run(res, 0x00007F00, 0x007F0000);
 //  int countLeft  = 0;
 //  int countRight = 0;

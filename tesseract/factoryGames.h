@@ -1,12 +1,12 @@
 #ifndef FACTORYGAMES_H
 #define FACTORYGAMES_H
-#include "BasicGame.h"
+#include "IGameable.h"
 #include "PvETicTacToeGame.h"
 
     class FactoryGames
     {
     public:
-        static IBasicGame* Get(int num)
+        static IGameable* Get(int num)
         {
             switch(num)
             {

@@ -1,10 +1,10 @@
 #ifndef COWBOY_H
 #define COWBOY_H
 #define PLAYER_COUNT 2
-#include "basictoos.h"
+#include "IToss.h"
 // int buttonPins[PLAYER_COUNT] = {1, 2}; //пока пины абстрактные
 // int ledPins[PLAYER_COUNT] = {3, 4};
-class ButtonCowboy : public IBasicToos
+class ButtonCowboy : public IToss
 {
 public:
 	ButtonCowboy();

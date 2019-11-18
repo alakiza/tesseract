@@ -1,17 +1,17 @@
 #ifndef FACTORYTOOTH_H
 #define FACTORYTOOTH_H
-#include "RandomToos.h"
+#include "RandomToss.h"
 #include "ButtonCowboy.h"
 
 class FactoryToos
 {
 public:
-	static IBasicToos* Get()
+	static IToss* Get()
   {
-    IBasicToos* res;
+    IToss* res;
     switch(random(0, 1))
     {
-      case 0: res = new RandomToos();
+      case 0: res = new RandomToss();
           break;
       case 1: res = new ButtonCowboy();
           break;
@@ -21,7 +21,7 @@ public:
  
 };
 
-//IBasicToos* FactoryToos::Get()
+//IToss* FactoryToos::Get()
 
 
 #endif

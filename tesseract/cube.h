@@ -4,46 +4,75 @@
 
 struct Point2D
 {
-  int X;
-  int Y;
+  int8_t X;
+  int8_t Y;
 };
 
 struct Point3D : public Point2D
 {
-  int Z;
+  int8_t Z;
 };
 
-long*** GenerateMatrix(int MaxX, int MaxY, int MaxZ)
+int8_t*** GenerateMatrix_int8(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
 {
-  long*** res = new long**[MaxX];
-  for(int i = 0; i < MaxX; ++i)
+  int8_t*** res = new int8_t**[MaxX];
+  for(int8_t i = 0; i < MaxX; ++i)
   {
-    res[i] = new long*[MaxY];
-    for(int j = 0; j < MaxY; ++j)
+    res[i] = new int8_t*[MaxY];
+    for(int8_t j = 0; j < MaxY; ++j)
     { 
-      res[i][j] = new long[MaxZ];
-      for(int k = 0; k < MaxZ; ++k)
+      res[i][j] = new int8_t[MaxZ];
+      for(int8_t k = 0; k < MaxZ; ++k)
         res[i][j][k] = 0;
     }
   }
   return res;
 }
 
-void CopyMatrix(long*** to, long*** from, int lenX, int lenY, int lenZ)
+long*** GenerateMatrix(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
 {
-  for(int i = 0; i < lenX; ++i)
-    for(int j = 0; j < lenY; ++j)
-      for(int k = 0; k < lenZ; ++k)
+  long*** res = new long**[MaxX];
+  for(int8_t i = 0; i < MaxX; ++i)
+  {
+    res[i] = new long*[MaxY];
+    for(int8_t j = 0; j < MaxY; ++j)
+    { 
+      res[i][j] = new long[MaxZ];
+      for(int8_t k = 0; k < MaxZ; ++k)
+        res[i][j][k] = 0;
+    }
+  }
+  return res;
+}
+
+void FreeMatrix_int8(int8_t*** matrix, int8_t lenX, int8_t lenY, int8_t lenZ)
+{
+  for(int8_t i = 0; i < lenX; ++i)
+  {
+    for(int8_t j = 0; j < lenY; ++j)
+    {
+      delete[] matrix[i][j];
+    }
+    delete[] matrix[i];
+  }
+  delete[] matrix;
+}
+
+void CopyMatrix(long*** to, long*** from, int8_t lenX, int8_t lenY, int8_t lenZ)
+{
+  for(int8_t i = 0; i < lenX; ++i)
+    for(int8_t j = 0; j < lenY; ++j)
+      for(int8_t k = 0; k < lenZ; ++k)
       {
         to[i][j][k] = from[i][j][k];
       }
 }
 
-void FreeMatrix(long*** matrix, int lenX, int lenY, int lenZ)
+void FreeMatrix(long*** matrix, int8_t lenX, int8_t lenY, int8_t lenZ)
 {
-  for(int i = 0; i < lenX; ++i)
+  for(int8_t i = 0; i < lenX; ++i)
   {
-    for(int j = 0; j < lenY; ++j)
+    for(int8_t j = 0; j < lenY; ++j)
     {
       delete[] matrix[i][j];
     }

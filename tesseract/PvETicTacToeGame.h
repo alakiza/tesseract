@@ -1,20 +1,21 @@
 #ifndef PVE_TIC_TAC_TOE_GAME_H
 #define PVE_TIC_TAC_TOE_GAME_H
-#include "BasicGame.h"
+#include "IGameable.h"
 #include "Button.h"
-
+    long PlayerColors[2];
+    
     long*** stateMatrix;
     
     class Player
     {
     public:
-        uint32_t Color;
+        int8_t Num;
         Point3D fCurrentPosition;
         JoyStick* fJoyStick;
         
-        Player(uint32_t aColor, JoyStick* aJoyStick)
+        Player(int8_t aNum, JoyStick* aJoyStick)
         {
-            Color = aColor;
+            Num = aNum;
             fJoyStick = aJoyStick;
             fCurrentPosition.X = 1;
             fCurrentPosition.Y = 1;
@@ -52,7 +53,7 @@
         long& elem = stateMatrix[fCurrentPosition.X][fCurrentPosition.Y][fCurrentPosition.Z];
         if(!elem)
         {
-          elem = this->Color;
+          elem = PlayerColors[this->Num];
 		  return true;
         }
 		return false;
@@ -133,30 +134,65 @@
                         }
     }
     
-    long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level)
+    long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level, uint8_t& z, int8_t player)
     {
         if(--level)
         {
+            int8_t win = 0;
+            int8_t*** WeightMatrix = GenerateMatrix_int8(3, 3, 0);
+            
+            for(int y = -1; y <= 1; ++y)
+                for(int x = -1; x <= 1; ++x)
+                {
+                    if(Matrix[x][y][z] == 0)
+                    {
+                        Matrix[x][y][z] = PlayerColors[player];
+                        
+                        Point3D point;
+                        point.X = x;
+                        point.Y = y;
+                        point.Z = z;
+                        
+                        long res = analyzeField(Matrix, point);
+                        if(res == PlayersColors[1]) 
+                            win = 1;
+                        else if(res == PlayerColors[0])
+                            win = -1;
+                        
+                        if(win == 0)
+                            WeightMatrix[x][y][z] = Calculate(Matrix, level, z, 1-player);
+                        
+                        Matrix[x][y][z] = 0;
+                    }
+                }
+            
+            long resultWeight = 0;
+            for(int x = 0; x < 3; ++x)
+                for(int y = 0; x < 3; ++x)
+                   resultWeight += WeightMatrix[x][y][0];
+            FreeMatrix_int8(WeightMatrix, 3, 3, 3);
             
         }
         return 0;
     }
     
-    void ArtificialIntelligence::MakeTurn()
+    void ArtificialIntelligence::MakeTurn(uint8_t z)
     {
-        long*** CopyStateMatrix = CopyMatrix(stateMatrix);
-        long*** WeightMatrix    = GenerateMatrix(3, 3, 3);
+        long*** CopyStateMatrix = GenerateMatrix(3, 3, 3);
+        CopyMatrix(stateMatrix, CopyStateMatrix, 3, 3, 3);
+        
+        int8_t*** WeightMatrix    = GenerateMatrix_int8(3, 3, 0);
         
         for(int y = -1; y <= 1; ++y)
             for(int x = -1; x <= 1; ++x)
             {
-                if(CopyStateMatrix[x][y][0] == 0)
+                if(CopyStateMatrix[x][y][z] == 0)
                 {
-                    WeightMatrix[x][y][0] = Calculate(CopyStateMatrix, 27);
+                    WeightMatrix[x][y][z] = Calculate(CopyStateMatrix, 5, z, 1);
                 }
                 else
                 {
-                    WeightMatrix[x][y][0] = 0x10000000;
+                    WeightMatrix[x][y][z] = 0x10000000;
                 }
             }
                 
@@ -175,8 +211,8 @@
         
         fPlayer->TryMakeTurn();
         
-        FreeMatrix(WeightMatrix);
-        FreeMatrix(CopyStateMatrix);
+        FreeMatrix_int8(WeightMatrix, 3, 3, 3);
+        FreeMatrix(CopyStateMatrix, 3, 3, 3);
     }
     
     ArtificialIntelligence::~ArtificialIntelligence()
@@ -192,7 +228,7 @@
         delete[] fRiskMatrix;
     }
     
-    class PvE_TicTacToe_Game : public IBasicGame
+    class PvE_TicTacToe_Game : public IGameable
     {
     private:
         Player** fPlayer;
@@ -283,11 +319,14 @@
 		fPlayerNum = FirstPlayer;
 		if(fPlayerNum < 0) fPlayerNum = 0;
 		if(fPlayerNum > 1) fPlayerNum = 1;
-		
-        fPlayer[0]->Color = FirstColor;
+        
+        PlayerColors[0] = FirstColor;
+        PlayerColors[1] = SecondColor;
+        
+        fPlayer[0]->Num = 0;
         fPlayer[0]->fJoyStick = joySticks[0];
         
-        fPlayer[1]->Color = SecondColor;
+        fPlayer[1]->Num = 1;
         fPlayer[1]->fJoyStick = joySticks[1];
         
         stateMatrix = GenerateMatrix(3, 3, 3);
@@ -308,7 +347,7 @@
 					if(fPlayer[0]->TryMakeTurn())
                     {
 						fPlayerNum = 1 - fPlayerNum;
-                        PlayerWin = analyzeField(fPlayer[0]->fCurrentPosition);
+                        PlayerWin = analyzeField(stateMatrix, fPlayer[0]->fCurrentPosition);
                     }
 				break;
 			case 1:
@@ -317,7 +356,7 @@
 					if(fPlayer[1]->TryMakeTurn())
                     {
 						fPlayerNum = 1 - fPlayerNum;
-                        PlayerWin = analyzeField(fPlayer[1]->fCurrentPosition);
+                        PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);
                     }
 				break;
 			}
@@ -338,7 +377,7 @@
             }
 			
 			CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
-			VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (fPlayer[fPlayerNum]->Color+0x007f7f7f) & 0x00ffffff;
+			VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x007f7f7f) & 0x00ffffff;
 			cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
 			cube->Show();
 
