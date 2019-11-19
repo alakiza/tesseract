@@ -13,21 +13,21 @@ struct Point3D : public Point2D
   int8_t Z;
 };
 
-int8_t*** GenerateMatrix_int8(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
-{
-  int8_t*** res = new int8_t**[MaxX];
-  for(int8_t i = 0; i < MaxX; ++i)
-  {
-    res[i] = new int8_t*[MaxY];
-    for(int8_t j = 0; j < MaxY; ++j)
-    { 
-      res[i][j] = new int8_t[MaxZ];
-      for(int8_t k = 0; k < MaxZ; ++k)
-        res[i][j][k] = 0;
-    }
-  }
-  return res;
-}
+// int8_t*** GenerateMatrix_int8(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
+// {
+//   int8_t*** res = new int8_t**[MaxX];
+//   for(int8_t i = 0; i < MaxX; ++i)
+//   {
+//     res[i] = new int8_t*[MaxY];
+//     for(int8_t j = 0; j < MaxY; ++j)
+//     { 
+//       res[i][j] = new int8_t[MaxZ];
+//       for(int8_t k = 0; k < MaxZ; ++k)
+//         res[i][j][k] = 0;
+//     }
+//   }
+//   return res;
+// }
 
 long*** GenerateMatrix(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
 {
@@ -45,18 +45,18 @@ long*** GenerateMatrix(int8_t MaxX, int8_t MaxY, int8_t MaxZ)
   return res;
 }
 
-void FreeMatrix_int8(int8_t*** matrix, int8_t lenX, int8_t lenY, int8_t lenZ)
-{
-  for(int8_t i = 0; i < lenX; ++i)
-  {
-    for(int8_t j = 0; j < lenY; ++j)
-    {
-      delete[] matrix[i][j];
-    }
-    delete[] matrix[i];
-  }
-  delete[] matrix;
-}
+// void FreeMatrix_int8(int8_t*** matrix, int8_t lenX, int8_t lenY, int8_t lenZ)
+// {
+//   for(int8_t i = 0; i < lenX; ++i)
+//   {
+//     for(int8_t j = 0; j < lenY; ++j)
+//     {
+//       delete[] matrix[i][j];
+//     }
+//     delete[] matrix[i];
+//   }
+//   delete[] matrix;
+// }
 
 void CopyMatrix(long*** to, long*** from, int8_t lenX, int8_t lenY, int8_t lenZ)
 {

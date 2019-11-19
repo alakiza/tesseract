@@ -31,6 +31,39 @@
         bool TryMakeTurn();
         
     };
+
+    class ArtificialIntelligence
+    {
+    private:
+      Player* fPlayer;
+    int8_t*** fRiskMatrix;
+    
+      void IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz);
+      
+    long Calculate(long*** Matrix, uint8_t level, uint8_t& z, int8_t player);
+    public:
+      ArtificialIntelligence(Player* player);
+      
+      void PeopleTurnMaked(Point3D point);
+      void MakeTurn(uint8_t z);
+
+      ~ArtificialIntelligence();
+    };
+
+    class PvE_TicTacToe_Game : public IGameable
+    {
+    private:
+        Player** fPlayer;
+        ArtificialIntelligence* AI;
+    int8_t fPlayerNum;
+    public:
+        PvE_TicTacToe_Game();
+        static long analyzeField(long*** Matrix, Point3D point);
+        static bool IsDrawGame(long*** Matrix, int8_t& z);
+        
+        void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
+        ~PvE_TicTacToe_Game();
+    };
     
     void Player::CheckControls()
     {
@@ -58,24 +91,6 @@
         }
 		return false;
     }
-
-    class ArtificialIntelligence
-    {
-    private:
-      Player* fPlayer;
-	  int8_t*** fRiskMatrix;
-	  
-      void IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz);
-      
-	  long Calculate(long*** Matrix, uint8_t level);
-    public:
-      ArtificialIntelligence(Player* player);
-      
-      void PeopleTurnMaked(Point3D point);
-      void MakeTurn();
-
-      ~ArtificialIntelligence();
-    };
     
     ArtificialIntelligence::ArtificialIntelligence(Player* player)
     {
@@ -136,13 +151,13 @@
     
     long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level, uint8_t& z, int8_t player)
     {
+        long resultWeight = 0;
         if(--level)
         {
             int8_t win = 0;
-            int8_t*** WeightMatrix = GenerateMatrix_int8(3, 3, 0);
             
-            for(int y = -1; y <= 1; ++y)
-                for(int x = -1; x <= 1; ++x)
+            for(int y = 0; y <= 2; ++y)
+                for(int x = 0; x <= 2; ++x)
                 {
                     if(Matrix[x][y][z] == 0)
                     {
@@ -153,27 +168,23 @@
                         point.Y = y;
                         point.Z = z;
                         
-                        long res = analyzeField(Matrix, point);
-                        if(res == PlayersColors[1]) 
+                        long res = PvE_TicTacToe_Game::analyzeField(Matrix, point);
+                        if(res == PlayerColors[1]) 
                             win = 1;
                         else if(res == PlayerColors[0])
                             win = -1;
                         
+                        resultWeight += win;
+                        
                         if(win == 0)
-                            WeightMatrix[x][y][z] = Calculate(Matrix, level, z, 1-player);
+                            resultWeight += Calculate(Matrix, level, z, 1-player);
                         
                         Matrix[x][y][z] = 0;
                     }
                 }
             
-            long resultWeight = 0;
-            for(int x = 0; x < 3; ++x)
-                for(int y = 0; x < 3; ++x)
-                   resultWeight += WeightMatrix[x][y][0];
-            FreeMatrix_int8(WeightMatrix, 3, 3, 3);
-            
         }
-        return 0;
+        return resultWeight;
     }
     
     void ArtificialIntelligence::MakeTurn(uint8_t z)
@@ -181,10 +192,10 @@
         long*** CopyStateMatrix = GenerateMatrix(3, 3, 3);
         CopyMatrix(stateMatrix, CopyStateMatrix, 3, 3, 3);
         
-        int8_t*** WeightMatrix    = GenerateMatrix_int8(3, 3, 0);
+        long*** WeightMatrix    = GenerateMatrix(3, 3, 3);
         
-        for(int y = -1; y <= 1; ++y)
-            for(int x = -1; x <= 1; ++x)
+        for(int y = 0; y <= 2; ++y)
+            for(int x = 0; x <= 2; ++x)
             {
                 if(CopyStateMatrix[x][y][z] == 0)
                 {
@@ -197,21 +208,21 @@
             }
                 
         long MaxWeight = 0x10000000;
-        for(int y = -1; y <= 1; ++y)
-            for(int x = -1; x <= 1; ++x)
+        for(int y = 0; y <= 2; ++y)
+            for(int x = 0; x <= 2; ++x)
             {
-                if(WeightMatrix[x][y][0] > MaxWeight)
+                if(WeightMatrix[x][y][z] > MaxWeight)
                 {
-                    MaxWeight = WeightMatrix[x][y][0];
+                    MaxWeight = WeightMatrix[x][y][z];
                     fPlayer->fCurrentPosition.X = x;
                     fPlayer->fCurrentPosition.Y = y;
-                    fPlayer->fCurrentPosition.Z = 0;
+                    fPlayer->fCurrentPosition.Z = z;
                 }
             }
         
         fPlayer->TryMakeTurn();
         
-        FreeMatrix_int8(WeightMatrix, 3, 3, 3);
+        FreeMatrix(WeightMatrix, 3, 3, 3);
         FreeMatrix(CopyStateMatrix, 3, 3, 3);
     }
     
@@ -227,21 +238,6 @@
         }
         delete[] fRiskMatrix;
     }
-    
-    class PvE_TicTacToe_Game : public IGameable
-    {
-    private:
-        Player** fPlayer;
-        ArtificialIntelligence* AI;
-		int8_t fPlayerNum;
-    public:
-        PvE_TicTacToe_Game();
-        static long analyzeField(long*** Matrix, Point3D point);
-        
-        void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
-        ~PvE_TicTacToe_Game();
-    };
-
     
     PvE_TicTacToe_Game::PvE_TicTacToe_Game()
     {
@@ -312,9 +308,20 @@
         return 0;
     }
     
+    static bool PvE_TicTacToe_Game::IsDrawGame(long*** Matrix, int8_t& z)
+    {
+        for(int y = 0; y <= 2; ++y)
+            for(int x = 0; x <= 2; ++x)
+                if(Matrix[x][y][z] == 0) return false;
+                
+        return true;
+                
+    }
+    
     void PvE_TicTacToe_Game::Run(const int FirstPlayer, const uint32_t FirstColor, const uint32_t SecondColor)
     {
         bool gameEnd = false;
+        int8_t layer = 0;
         
 		fPlayerNum = FirstPlayer;
 		if(fPlayerNum < 0) fPlayerNum = 0;
@@ -331,6 +338,8 @@
         
         stateMatrix = GenerateMatrix(3, 3, 3);
 		    long*** VisibleMatrix = GenerateMatrix(3, 3, 3);
+            
+        ArtificialIntelligence* AI = new ArtificialIntelligence(fPlayer[1]);
         
         cube->SetPixelColor(stateMatrix, 3, 3, 3);
         cube->Show();
@@ -338,6 +347,7 @@
         while(!gameEnd)
         {
             long PlayerWin = 0;
+            fPlayer[0]->fCurrentPosition.Z = layer; 
             
 			switch(fPlayerNum)
 			{
@@ -351,13 +361,16 @@
                     }
 				break;
 			case 1:
-				fPlayer[1]->CheckControls();
-				if(fPlayer[1]->fJoyStick->Click()) 
-					if(fPlayer[1]->TryMakeTurn())
-                    {
-						fPlayerNum = 1 - fPlayerNum;
-                        PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);
-                    }
+                AI->MakeTurn(layer);
+// 				fPlayer[1]->CheckControls();
+// 				if(fPlayer[1]->fJoyStick->Click()) 
+// 					if(fPlayer[1]->TryMakeTurn())
+//                     {
+// 						fPlayerNum = 1 - fPlayerNum;
+//                         PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);
+//                     }
+                fPlayerNum = 1 - fPlayerNum;
+                PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);    
 				break;
 			}
             
@@ -365,15 +378,20 @@
             {
                     lcd.clear();
                     PrintIn(lcd, 0, 2, F("First player"));
-                    PrintIn(lcd, 1, 6, F("WIN!"));
-                    gameEnd = true;
+                    PrintIn(lcd, 1, 6, F("WIN!"));                    
+                    if(++layer > 2) gameEnd = true;
             }
-            if(PlayerWin == SecondColor)
+            else if(PlayerWin == SecondColor)
             {
                     lcd.clear();
                     PrintIn(lcd, 0, 2, F("Second player"));
                     PrintIn(lcd, 1, 6, F("WIN!"));
-                    gameEnd = true;
+                    if(++layer > 2) gameEnd = true;
+            }
+            else
+            {
+                if(IsDrawGame(stateMatrix, layer))
+                    if(++layer > 2) gameEnd = true;
             }
 			
 			CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
@@ -384,6 +402,7 @@
 			delay(100);
         }
 
+        delete AI;
         FreeMatrix(VisibleMatrix, 3, 3, 3);
         FreeMatrix(stateMatrix, 3, 3, 3);
     }
