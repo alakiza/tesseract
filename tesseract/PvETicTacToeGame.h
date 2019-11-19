@@ -35,12 +35,13 @@
     class ArtificialIntelligence
     {
     private:
+      Point3D fBestTurn;
       Player* fPlayer;
     int8_t*** fRiskMatrix;
     
       void IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz);
       
-    long Calculate(long*** Matrix, uint8_t level, uint8_t& z, int8_t player);
+    long Calculate(long*** Matrix, uint8_t level, uint8_t MaxLevel, uint8_t& z, int8_t player);
     public:
       ArtificialIntelligence(Player* player);
       
@@ -149,10 +150,10 @@
                         }
     }
     
-    long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level, uint8_t& z, int8_t player)
+    long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level, uint8_t MaxLevel, uint8_t& z, int8_t player)
     {
         long resultWeight = 0;
-        if(--level)
+        if(level < MaxLevel)
         {
             int8_t win = 0;
             
@@ -162,6 +163,10 @@
                     if(Matrix[x][y][z] == 0)
                     {
                         Matrix[x][y][z] = PlayerColors[player];
+
+                        //cube->SetPixelColor(Matrix, 3, 3, 3);
+                        //cube->Show();
+                        //delay(100);
                         
                         Point3D point;
                         point.X = x;
@@ -170,16 +175,34 @@
                         
                         long res = PvE_TicTacToe_Game::analyzeField(Matrix, point);
                         if(res == PlayerColors[1]) 
+                        {
                             win = 1;
+                            if(level == 0) 
+                            {
+                              Matrix[x][y][z] = 0;
+                              return 65535;
+                            }
+                        }
                         else if(res == PlayerColors[0])
+                        {
                             win = -1;
+                            if(level == 1) 
+                            {
+                              Matrix[x][y][z] = 0;
+                              fBestTurn.X = x;
+                              fBestTurn.Y = y;
+                              return -500;
+                            }
+                        }
                         
                         resultWeight += win;
                         
                         if(win == 0)
-                            resultWeight += Calculate(Matrix, level, z, 1-player);
+                            resultWeight += Calculate(Matrix, level+1, MaxLevel, z, 1-player);
                         
                         Matrix[x][y][z] = 0;
+
+                        if(fBestTurn.X != -1) return -1;
                     }
                 }
             
@@ -189,8 +212,12 @@
     
     void ArtificialIntelligence::MakeTurn(uint8_t z)
     {
+        fBestTurn.X = -1;
+        fBestTurn.Y = -1;
+        fBestTurn.Z = -1;
+        
         long*** CopyStateMatrix = GenerateMatrix(3, 3, 3);
-        CopyMatrix(stateMatrix, CopyStateMatrix, 3, 3, 3);
+        CopyMatrix(CopyStateMatrix, stateMatrix, 3, 3, 3);
         
         long*** WeightMatrix    = GenerateMatrix(3, 3, 3);
         
@@ -199,26 +226,40 @@
             {
                 if(CopyStateMatrix[x][y][z] == 0)
                 {
-                    WeightMatrix[x][y][z] = Calculate(CopyStateMatrix, 5, z, 1);
+                    WeightMatrix[x][y][z] = Calculate(CopyStateMatrix, 0, 5, z, 1);
                 }
                 else
                 {
-                    WeightMatrix[x][y][z] = 0x10000000;
+                    WeightMatrix[x][y][z] = -32768;
                 }
             }
                 
-        long MaxWeight = 0x10000000;
+        long MaxWeight = -32768;
         for(int y = 0; y <= 2; ++y)
             for(int x = 0; x <= 2; ++x)
             {
+                Serial.println((String)WeightMatrix[x][y][z]);
                 if(WeightMatrix[x][y][z] > MaxWeight)
                 {
                     MaxWeight = WeightMatrix[x][y][z];
                     fPlayer->fCurrentPosition.X = x;
                     fPlayer->fCurrentPosition.Y = y;
                     fPlayer->fCurrentPosition.Z = z;
+
+                    cube->SetPixelColor(x, y, z, Color::FromRGB(255, 255, 255));
+                    cube->Show();
+                    delay(100); 
                 }
             }
+            
+        Serial.println(fBestTurn.X);
+        Serial.println(fBestTurn.Y);
+        
+        if(fBestTurn.X != -1) 
+        {
+          fPlayer->fCurrentPosition.X =  fBestTurn.X;
+          fPlayer->fCurrentPosition.Y =  fBestTurn.Y;
+        }
         
         fPlayer->TryMakeTurn();
         
@@ -284,7 +325,7 @@
                                Y >= 0 && Y < 3 &&
                                Z >= 0 && Z < 3)
                                {
-                                   //cube->SetPixelColor(X, Y, Z, Color::FromRGB(255, 255, 255));
+                                   //cube->SetPixelColor(X, Y, Z, LastValue);
                                    //cube->Show();
                                    //delay(100); 
             
@@ -394,12 +435,12 @@
                     if(++layer > 2) gameEnd = true;
             }
 			
-			CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
-			VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x007f7f7f) & 0x00ffffff;
-			cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
-			cube->Show();
-
-			delay(100);
+    			CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
+    			VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00010101) & 0x00ffffff;
+    			cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
+    			cube->Show();
+    
+    			delay(250);
         }
 
         delete AI;

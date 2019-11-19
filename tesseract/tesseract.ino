@@ -66,6 +66,8 @@ void setup()
     pinMode(13, OUTPUT);
 	//randomSeed(32064);
     randomSeed(analogRead(A7));
+
+    Serial.begin(9600);
 }
 
 void loop() 
@@ -75,7 +77,7 @@ void loop()
   delete toos;
 
   IGameable* game = FactoryGames::Get(0);
-  game->Run(res, 0x00007F00, 0x007F0000);
+  game->Run(res, 0x00000700, 0x00070000);
 //  int countLeft  = 0;
 //  int countRight = 0;
 //	while(true)

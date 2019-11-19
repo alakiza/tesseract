@@ -153,7 +153,7 @@
 
     pinMode(fPinAxisX, INPUT_PULLUP);
     pinMode(fPinAxisY, INPUT_PULLUP);
-    button = new Button(fPinButton, false);
+    button = new Button(fPinButton, true);
   }
   
   void JoyStick::ScanState()
