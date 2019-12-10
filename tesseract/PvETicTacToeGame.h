@@ -37,7 +37,7 @@
     private:
       Point3D fBestTurn;
       Player* fPlayer;
-    int8_t*** fRiskMatrix;
+      int8_t*** fRiskMatrix;
     
       void IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz);
       
@@ -297,11 +297,12 @@
         delete AI;
     }
     
-    static long PvE_TicTacToe_Game::analyzeField(long*** Matrix, Point3D point)
+    static Point3D* PvE_TicTacToe_Game::analyzeField(long*** Matrix, Point3D point)
     {
         long& Value = Matrix[point.X][point.Y][point.Z];
         long LastValue = 0;
         uint8_t count = 1;
+		Point3D* res = new Point3D[3];
         
         int8_t X;
         int8_t Y;
@@ -334,19 +335,26 @@
                                        if(LastValue != 0)
                                        {
                                            ++count;
+										   res[count-1].X = X;
+									       res[count-1].Y = Y;
+									       res[count-1].Z = Z;
                                            if(count == 3)
-                                               return LastValue;
+                                               return res;
                                        }
                                    }
                                    else
                                    {
                                        LastValue = Matrix[X][Y][Z];
                                        count = 1;
+									   res[count-1].X = X;
+									   res[count-1].Y = Y;
+									   res[count-1].Z = Z;
                                    }
                                }
                         }
                     }
-        return 0;
+		delete[] res;
+        return nullptr;
     }
     
     static bool PvE_TicTacToe_Game::IsDrawGame(long*** Matrix, int8_t& z)
@@ -398,7 +406,9 @@
 					if(fPlayer[0]->TryMakeTurn())
                     {
 						fPlayerNum = 1 - fPlayerNum;
-                        PlayerWin = analyzeField(stateMatrix, fPlayer[0]->fCurrentPosition);
+                        Point3D* WinCombination = analyzeField(stateMatrix, fPlayer[0]->fCurrentPosition);    
+				if(WinCombination != nullptr)
+					PlayerWin = stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
                     }
 				break;
 			case 1:
@@ -411,7 +421,9 @@
 //                         PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);
 //                     }
                 fPlayerNum = 1 - fPlayerNum;
-                PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);    
+                Point3D* WinCombination = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);    
+				if(WinCombination != nullptr)
+					PlayerWin = stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
 				break;
 			}
             
@@ -441,6 +453,22 @@
     			cube->Show();
     
     			delay(250);
+				
+				if(gameEnd)
+				{
+					CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);
+					for(int8_t i = 0; i < 3; ++i)
+					{           
+						VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00101010) & 0x00ffffff;
+						cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
+						cube->Show();
+			
+						delay(250);
+					}
+					
+					delay(1000);
+				}
+					
         }
 
         delete AI;
