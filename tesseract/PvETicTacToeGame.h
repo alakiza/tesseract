@@ -2,6 +2,7 @@
 #define PVE_TIC_TAC_TOE_GAME_H
 #include "IGameable.h"
 #include "Button.h"
+
     long PlayerColors[2];
     
     long*** stateMatrix;
@@ -59,7 +60,7 @@
     int8_t fPlayerNum;
     public:
         PvE_TicTacToe_Game();
-        static long analyzeField(long*** Matrix, Point3D point);
+        static Point3D* analyzeField(long*** Matrix, Point3D point);
         static bool IsDrawGame(long*** Matrix, int8_t& z);
         
         void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
@@ -173,26 +174,30 @@
                         point.Y = y;
                         point.Z = z;
                         
-                        long res = PvE_TicTacToe_Game::analyzeField(Matrix, point);
-                        if(res == PlayerColors[1]) 
+                        Point3D* res = PvE_TicTacToe_Game::analyzeField(Matrix, point);
+                        if(res != nullptr)
                         {
-                            win = 1;
-                            if(level == 0) 
+                            if(stateMatrix[res[0].X][res[0].Y][res[0].Z] == PlayerColors[1]) 
                             {
-                              Matrix[x][y][z] = 0;
-                              return 65535;
+                                win = 1;
+                                if(level == 0) 
+                                {
+                                  Matrix[x][y][z] = 0;
+                                  return 65535;
+                                }
                             }
-                        }
-                        else if(res == PlayerColors[0])
-                        {
-                            win = -1;
-                            if(level == 1) 
+                            else if(stateMatrix[res[0].X][res[0].Y][res[0].Z] == PlayerColors[0])
                             {
-                              Matrix[x][y][z] = 0;
-                              fBestTurn.X = x;
-                              fBestTurn.Y = y;
-                              return -500;
+                                win = -1;
+                                if(level == 1) 
+                                {
+                                  Matrix[x][y][z] = 0;
+                                  fBestTurn.X = x;
+                                  fBestTurn.Y = y;
+                                  return -500;
+                                }
                             }
+                            delete[] res;
                         }
                         
                         resultWeight += win;
@@ -283,7 +288,7 @@
     PvE_TicTacToe_Game::PvE_TicTacToe_Game()
     {
         fPlayer = new Player*[2];
-        for(int i = 0; i < 2; ++i) fPlayer[i] = new Player(0, nullptr);
+        for(int i = 0; i < 2; ++i) fPlayer[i] = new Player(i, nullptr);
         
         AI = new ArtificialIntelligence(fPlayer[1]);
     }
@@ -297,13 +302,19 @@
         delete AI;
     }
     
-    static Point3D* PvE_TicTacToe_Game::analyzeField(long*** Matrix, Point3D point)
+    Point3D* PvE_TicTacToe_Game::analyzeField(long*** Matrix, Point3D point)
     {
         long& Value = Matrix[point.X][point.Y][point.Z];
         long LastValue = 0;
-        uint8_t count = 1;
+        uint8_t count = 0;
 		Point3D* res = new Point3D[3];
-        
+        for(int8_t i = 0; i < 3; ++i)
+        {
+          res[i].X = 0;
+          res[i].Y = 0;
+          res[i].Z = 0;
+          
+        }
         int8_t X;
         int8_t Y;
         int8_t Z;
@@ -314,7 +325,7 @@
                     if(dx != 0 || dy != 0 || dz != 0)
                     {
                         long LastValue = 0;
-                        count = 1;
+                        count = 0;
                 
                         for(int8_t i = -2; i < 2; ++i)
                         {
@@ -326,38 +337,56 @@
                                Y >= 0 && Y < 3 &&
                                Z >= 0 && Z < 3)
                                {
-                                   //cube->SetPixelColor(X, Y, Z, LastValue);
-                                   //cube->Show();
-                                   //delay(100); 
+                                   cube->SetPixelColor(X, Y, Z, LastValue);
+                                   cube->Show();
+                                   delay(1); 
+                                
+                                   //Serial.println(res[count].X); 
+                                   //Serial.println(res[count].Y); 
+                                   //Serial.println(res[count].Z);
+
+                                   //Serial.println(count);
             
                                    if (Matrix[X][Y][Z] == LastValue) 
                                    {
                                        if(LastValue != 0)
                                        {
                                            ++count;
-										   res[count-1].X = X;
-									       res[count-1].Y = Y;
-									       res[count-1].Z = Z;
+                                           Serial.println("$$$");
+                                           Serial.println(count);
+                                           Serial.println("###");
+                  										     res[count-1].X = X;
+                  									       res[count-1].Y = Y;
+                  									       res[count-1].Z = Z;
                                            if(count == 3)
+                                           { 
+                                               Serial.println("Out with res");
+                                               Serial.println(count);
+                                               Serial.println(res[count-1].X); 
+                                               Serial.println(res[count-1].Y); 
+                                               Serial.println(res[count-1].Z);
                                                return res;
+                                           }
                                        }
                                    }
                                    else
                                    {
                                        LastValue = Matrix[X][Y][Z];
                                        count = 1;
-									   res[count-1].X = X;
-									   res[count-1].Y = Y;
-									   res[count-1].Z = Z;
+                  									   res[count-1].X = X;
+                  									   res[count-1].Y = Y;
+                  									   res[count-1].Z = Z;
                                    }
                                }
                         }
                     }
-		delete[] res;
+        Serial.println("Out");
+        
+		    delete[] res;
         return nullptr;
     }
     
-    static bool PvE_TicTacToe_Game::IsDrawGame(long*** Matrix, int8_t& z)
+    bool PvE_TicTacToe_Game::IsDrawGame(long*** Matrix, int8_t& z)
     {
         for(int y = 0; y <= 2; ++y)
             for(int x = 0; x <= 2; ++x)
@@ -371,6 +400,7 @@
     {
         bool gameEnd = false;
         int8_t layer = 0;
+        Point3D* WinCombination;
         
 		fPlayerNum = FirstPlayer;
 		if(fPlayerNum < 0) fPlayerNum = 0;
@@ -378,6 +408,14 @@
         
         PlayerColors[0] = FirstColor;
         PlayerColors[1] = SecondColor;
+
+        fPlayer[0]->fCurrentPosition.X = 1;
+        fPlayer[0]->fCurrentPosition.Y = 1;
+        fPlayer[0]->fCurrentPosition.Z = 0;
+
+        fPlayer[1]->fCurrentPosition.X = 1;
+        fPlayer[1]->fCurrentPosition.Y = 1;
+        fPlayer[1]->fCurrentPosition.Z = 0;
         
         fPlayer[0]->Num = 0;
         fPlayer[0]->fJoyStick = joySticks[0];
@@ -406,9 +444,11 @@
 					if(fPlayer[0]->TryMakeTurn())
                     {
 						fPlayerNum = 1 - fPlayerNum;
-                        Point3D* WinCombination = analyzeField(stateMatrix, fPlayer[0]->fCurrentPosition);    
-				if(WinCombination != nullptr)
-					PlayerWin = stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
+                        WinCombination = analyzeField(stateMatrix, fPlayer[0]->fCurrentPosition);    
+                        if(WinCombination != nullptr)
+                        {
+                            PlayerWin = stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
+                        }
                     }
 				break;
 			case 1:
@@ -421,24 +461,26 @@
 //                         PlayerWin = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);
 //                     }
                 fPlayerNum = 1 - fPlayerNum;
-                Point3D* WinCombination = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);    
+                WinCombination = analyzeField(stateMatrix, fPlayer[1]->fCurrentPosition);    
 				if(WinCombination != nullptr)
+                {
 					PlayerWin = stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
+                }
 				break;
 			}
             
             if(PlayerWin == FirstColor)
             {
-                    lcd.clear();
-                    PrintIn(lcd, 0, 2, F("First player"));
-                    PrintIn(lcd, 1, 6, F("WIN!"));                    
+                    //lcd.clear();
+                    //PrintIn(lcd, 0, 2, F("First player"));
+                    //PrintIn(lcd, 1, 6, F("WIN!"));                    
                     if(++layer > 2) gameEnd = true;
             }
             else if(PlayerWin == SecondColor)
             {
-                    lcd.clear();
-                    PrintIn(lcd, 0, 2, F("Second player"));
-                    PrintIn(lcd, 1, 6, F("WIN!"));
+                    //lcd.clear();
+                    //PrintIn(lcd, 0, 2, F("Second player"));
+                    //PrintIn(lcd, 1, 6, F("WIN!"));
                     if(++layer > 2) gameEnd = true;
             }
             else
@@ -447,6 +489,7 @@
                     if(++layer > 2) gameEnd = true;
             }
 			
+                Serial.println("Show");
     			CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);           
     			VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00010101) & 0x00ffffff;
     			cube->SetPixelColor(VisibleMatrix, 3, 3, 3);

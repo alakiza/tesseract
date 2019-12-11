@@ -9,7 +9,7 @@ public:
 	static IToss* Get()
   {
     IToss* res;
-    switch(random(0, 1))
+    switch(random(1, 2))
     {
       case 0: res = new RandomToss();
           break;

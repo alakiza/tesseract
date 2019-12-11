@@ -20,6 +20,7 @@
 			fKeyPress = false;
 			fPressCount = 0;
       fClick = true;
+      
       Clicked = false;
 
 			if(PULLUP) 

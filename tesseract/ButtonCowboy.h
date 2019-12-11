@@ -20,26 +20,26 @@ ButtonCowboy::ButtonCowboy()
 
 int ButtonCowboy::Run()
 {	
-  lcd.clear();
-  PrintIn(lcd, 0, 0, F("       3        "));
-	visualizer->SetPixelColor(0, 8, 128, 128, 0);
+  //lcd.clear();
+  //PrintIn(lcd, 0, 0, F("       3        "));
+	visualizer->SetPixelColor(0, 8, 32, 32, 0);
 	visualizer->Show();
 	delay(1000);
   
-  lcd.clear();
-  PrintIn(lcd, 0, 0, F("       2        "));
-	visualizer->SetPixelColor(9, 17, 192, 192, 0);
+  //lcd.clear();
+  //PrintIn(lcd, 0, 0, F("       2        "));
+	visualizer->SetPixelColor(9, 17, 64, 64, 0);
 	visualizer->Show();
 	delay(1000);
   
-  lcd.clear();
-  PrintIn(lcd, 0, 0, F("       1        "));
-	visualizer->SetPixelColor(18, 26, 255, 255, 0);
+  //lcd.clear();
+  //PrintIn(lcd, 0, 0, F("       1        "));
+	visualizer->SetPixelColor(18, 26, 96, 96, 0);
 	visualizer->Show();
 	delay(1000);
   
-  lcd.clear();
-  PrintIn(lcd, 0, 0, F("     PUSH!      "));
+  //lcd.clear();
+  //PrintIn(lcd, 0, 0, F("     PUSH!      "));
 	visualizer->SetAllPixelColor(255, 255, 255);
 	visualizer->Show();
 
@@ -54,6 +54,7 @@ int ButtonCowboy::Run()
     int res = -1;
   	while(res == -1)
   	{
+      Serial.println(res);
   		if (joySticks[0]->Pressed())  // если игрок номер «player» нажал кнопку...
 	  	{
 	 	  	// // то включаем какой-нибудь светодиод(напимер посеридине) цвет 
@@ -67,11 +68,13 @@ int ButtonCowboy::Run()
 	  	{
 	  		res = 1;
 	    }
+     Serial.println(res);
       delay(1);
 	}
+  Serial.println("OK");
   joySticks[0]->ResetClick();
   joySticks[1]->ResetClick();
-  lcd.clear();
+  //lcd.clear();
   visualizer->Clear(true);
   return res;
 }
