@@ -4,17 +4,17 @@
 	class Button
 	{
 	private:
-		char fpin;
+		uint8_t fpin;
 
-		char fPressCount;
-		char fMaxPressCountToValid;
+		uint8_t fPressCount;
+		uint8_t fMaxPressCountToValid;
 		bool fClick;
 
     bool Clicked;
 
 		bool fKeyPress;
 
-		inline void BaseInit(const char& pin, const bool PULLUP)
+		inline void BaseInit(const uint8_t pin, const bool PULLUP)
 		{
 			fpin = pin;
 			fKeyPress = false;
@@ -31,7 +31,7 @@
 
 	public:
 
-		Button(const char pin, const bool PULLUP)
+		Button(const uint8_t pin, const bool PULLUP)
 		{
 			BaseInit(pin, PULLUP);
 			fMaxPressCountToValid = 15;
@@ -45,13 +45,15 @@
 
 		void ScanState()
 		{
-			if ( fClick == (!digitalRead(fpin)) ) 
+			if ( fClick == (digitalRead(fpin)) ) 
 			{
 			    fPressCount = 0;
 			}
 			else 
 			{
+          
 			    ++fPressCount;
+          //Serial.println(fPressCount);
 
 			    if ( fPressCount >= fMaxPressCountToValid ) 
 			    {
@@ -97,13 +99,13 @@
   class JoyStick
   {
     private:
-      char fPinAxisX;
-      char fPinAxisY;
-      char fPinButton;
+      int fPinAxisX;
+      int fPinAxisY;
+      int fPinButton;
       int fAxisX;
       int fAxisY;
 
-      Button* button;
+      Button* fbutton;
     public:
       JoyStick(int PinAxisX, int PinAxisY, char PinButton);
       
@@ -120,15 +122,17 @@
       
       inline bool Pressed()
       {
-        return button->Pressed();
+        //return false;
+        return fbutton->Pressed();
       }
       inline bool Click()
       {
-        return button->Click();
+        return fbutton->Click();
+        //return false;
       }
       inline void ResetClick()
       {
-        button->ResetClick();
+        fbutton->ResetClick();
       }
       inline char pinAxisX()
       {
@@ -154,19 +158,20 @@
 
     pinMode(fPinAxisX, INPUT_PULLUP);
     pinMode(fPinAxisY, INPUT_PULLUP);
-    button = new Button(fPinButton, true);
+    fbutton = new Button(fPinButton, true);
   }
   
   void JoyStick::ScanState()
   {
     fAxisX = analogRead(fPinAxisX) - 512;
     fAxisY = analogRead(fPinAxisY) - 512;
-    button->ScanState();
+    fbutton->ScanState();
   }
 
   JoyStick::~JoyStick()
   {
-    delete button;
+    Serial.println("JoyD");
+    delete fbutton;
   }
   
 

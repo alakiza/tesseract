@@ -17,7 +17,7 @@
 
 
 //LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
-//void PrintIn(const LiquidCrystal_I2C& alcd, const char row, const char column, const String message)
+//void PrintIn(const LiquidCrystal_I2C& alcd, const uint8_t row, const uint8_t column, const String message)
 //{
 //  alcd.setCursor(column, row);
 //  alcd.print(message);
@@ -76,8 +76,9 @@ void loop()
 	int res = toos->Run();
   delete toos;
 
-//  IGameable* game = FactoryGames::Get(0);
-//  game->Run(res, 0x00000700, 0x00070000);
+  IGameable* game = FactoryGames::Get(0);
+  Serial.println(F("Game created"));
+  game->Run(res, 0x00000700, 0x00070000);
 //  int countLeft  = 0;
 //  int countRight = 0;
 //	while(true)
@@ -111,7 +112,7 @@ void loop()
 //    visualizer->Show();
 //    delay(1);
 //	}
-// delete game;
+ delete game;
  //delete cube;
  //delete visualizer;
  //for(int i = 0; i < JOY_STICK_COUNT; ++i) delete joySticks[i];

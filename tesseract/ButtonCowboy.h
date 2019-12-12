@@ -22,25 +22,25 @@ int ButtonCowboy::Run()
 {	
   //lcd.clear();
   //PrintIn(lcd, 0, 0, F("       3        "));
-	visualizer->SetPixelColor(0, 8, 32, 32, 0);
+	visualizer->SetPixelColor(0, 8, 1, 1, 0);
 	visualizer->Show();
 	delay(1000);
   
   //lcd.clear();
   //PrintIn(lcd, 0, 0, F("       2        "));
-	visualizer->SetPixelColor(9, 17, 64, 64, 0);
+	visualizer->SetPixelColor(9, 17, 16, 16, 0);
 	visualizer->Show();
 	delay(1000);
   
   //lcd.clear();
   //PrintIn(lcd, 0, 0, F("       1        "));
-	visualizer->SetPixelColor(18, 26, 96, 96, 0);
+	visualizer->SetPixelColor(18, 26, 32, 32, 0);
 	visualizer->Show();
-	delay(1000);
+	delay(1000+random(0, 500)-250);
   
   //lcd.clear();
   //PrintIn(lcd, 0, 0, F("     PUSH!      "));
-	visualizer->SetAllPixelColor(255, 255, 255);
+	visualizer->SetAllPixelColor(64, 64, 64);
 	visualizer->Show();
 
 	// for (int player = 0; player < PLAYER_COUNT; ++player)  
@@ -54,24 +54,19 @@ int ButtonCowboy::Run()
     int res = -1;
   	while(res == -1)
   	{
-      Serial.println(res);
   		if (joySticks[0]->Pressed())  // если игрок номер «player» нажал кнопку...
 	  	{
-	 	  	// // то включаем какой-нибудь светодиод(напимер посеридине) цвет 
-	    	// digitalWrite(ledPins[player], HIGH);
-	     //  	delay(1000);
-	     //  	digitalWrite(ledPins[player], LOW);
-	     //  	break; // Есть победитель! Выходим из цикла
 	  		res = 0;
 	    }
 	    if (joySticks[1]->Pressed())  // если игрок номер «player» нажал кнопку...
 	  	{
 	  		res = 1;
 	    }
-     Serial.println(res);
+     //Serial.println(res);
       delay(1);
 	}
-  Serial.println("OK");
+  Serial.print(res);
+  Serial.println(F(" toss win"));
   joySticks[0]->ResetClick();
   joySticks[1]->ResetClick();
   //lcd.clear();
