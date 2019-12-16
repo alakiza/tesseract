@@ -38,15 +38,11 @@
     private:
       Point3D fBestTurn;
       Player* fPlayer;
-      int8_t*** fRiskMatrix;
-
-      void IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz);
 
     long Calculate(long*** Matrix, uint8_t level, uint8_t MaxLevel, uint8_t& z, int8_t player);
     public:
       ArtificialIntelligence(Player* player);
 
-      void PeopleTurnMaked(Point3D point);
       void MakeTurn(uint8_t z);
 
       ~ArtificialIntelligence();
@@ -97,58 +93,6 @@
     ArtificialIntelligence::ArtificialIntelligence(Player* player)
     {
         fPlayer = player;
-
-        fRiskMatrix = new int8_t**[3];
-        for(int i = 0; i < 3; ++i)
-        {
-            fRiskMatrix[i] = new int8_t*[3];
-            for(int j = 0; j < 3; ++j)
-            {
-              fRiskMatrix[i][j] = new int8_t[3];
-              for(int k = 0; k < 3; ++k)
-                fRiskMatrix[i][j][k] = 0;
-            }
-        }
-
-        fRiskMatrix[1][1][1] = 1;
-    }
-
-    void ArtificialIntelligence::IncRiskMatrix(Point3D at, int8_t val, int8_t dx, int8_t dy, int8_t dz)
-    {
-        do
-        {
-            at.X += dx;
-            at.Y += dy;
-            at.Z += dz;
-
-            int8_t& elem = fRiskMatrix[at.X][at.Y][at.Z];
-            if(elem >= 0)
-            {
-                elem += val;
-            }
-            else
-            {
-                break;
-            }
-        } while (at.X > 0 && at.Y > 0 && at.Z > 0 &&
-                 at.X < 2 && at.Y < 2 && at.Z < 2);
-    }
-
-    void ArtificialIntelligence::PeopleTurnMaked(Point3D point)
-    {
-        fRiskMatrix[point.X][point.Y][point.Z] = 0xff;
-        for(int8_t dx = -1; dx <= 1; ++dx)
-            for(int8_t dy = -1; dy <= 1; ++dy)
-                for(int8_t dz = -1; dz <= 1; ++dz)
-                    if (point.X + dx >= 0 && point.Y + dy >= 0 && point.Z + dz >= 0 &&
-                        point.X + dx <  3 && point.Y + dy <  3 && point.Z + dz <  3)
-                        {
-                            if(!(
-                                ((point.X == 1 && point.Y % 2 == 0) && (dx == 1 || dx == -1) && (dy == 1 || dy == -1)) ||
-                                ((point.Y == 1 && point.X % 2 == 0) && (dy == 1 || dy == -1) && (dx == 1 || dx == -1))
-                                ))
-                            IncRiskMatrix(point, 1, dx, dy, dz);
-                        }
     }
 
     long ArtificialIntelligence::Calculate(long*** Matrix, uint8_t level, uint8_t MaxLevel, uint8_t& z, int8_t player)
@@ -274,15 +218,7 @@
 
     ArtificialIntelligence::~ArtificialIntelligence()
     {
-        for(int i = 0; i < 3; ++i)
-        {
-            for(int j = 0; j < 3; ++j)
-            {
-              delete[] fRiskMatrix[i][j];
-            }
-            delete[] fRiskMatrix[i];
-        }
-        delete[] fRiskMatrix;
+    
     }
 
     PvE_TicTacToe_Game::PvE_TicTacToe_Game()
@@ -521,7 +457,9 @@
 
                 if(gameEnd)
                 {
+                    Serial.println(F("Game ended"));
                     CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);
+                    Serial.println(F("StateMatrix Copy"));
                     for(int8_t i = 0; i < 3; ++i)
                     {
                         VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00101010) & 0x00ffffff;
@@ -537,7 +475,10 @@
         }
 
         delete AI;
+        Serial.println(F("AI deleted"));
         FreeMatrix(VisibleMatrix, 3, 3, 3);
+        Serial.println(F("Visible Matrix freed"));
         FreeMatrix(stateMatrix, 3, 3, 3);
+        Serial.println(F("State Matrix freed"));
     }
 #endif
