@@ -1,8 +1,8 @@
-#ifndef PVE_TIC_TAC_TOE_GAME_H
-#define PVE_TIC_TAC_TOE_GAME_H
+#ifndef PVP_TIC_TAC_TOE_GAME_H
+#define PVP_TIC_TAC_TOE_GAME_H
 #include "IGameable.h"
 #include "Button.h"
-    namespace PvETicTacToeGameGlobals{
+    namespace PvPTicTacToeGameGlobals{
         long PlayerColors[2];
         long*** stateMatrix;
     }
@@ -115,10 +115,10 @@
 
         bool TryMakeTurn()
         {
-            long& elem = PvETicTacToeGameGlobals::stateMatrix[fCurrentPosition.X][fCurrentPosition.Y][fCurrentPosition.Z];
+            long& elem = PvPTicTacToeGameGlobals::stateMatrix[fCurrentPosition.X][fCurrentPosition.Y][fCurrentPosition.Z];
             if(!elem)
             {
-              elem = PvETicTacToeGameGlobals::PlayerColors[this->Num];
+              elem = PvPTicTacToeGameGlobals::PlayerColors[this->Num];
               return true;
             }
             return false;
@@ -149,7 +149,7 @@
                     {
                         if(Matrix[x][y][z] == 0)
                         {
-                            Matrix[x][y][z] = PvETicTacToeGameGlobals::PlayerColors[player];
+                            Matrix[x][y][z] = PvPTicTacToeGameGlobals::PlayerColors[player];
 
                             Point3D point;
                             point.X = x;
@@ -160,7 +160,7 @@
                             Point3D* res = analyzeField(Matrix, point);
                             if(res != nullptr)
                             {
-                                if(PvETicTacToeGameGlobals::stateMatrix[res[0].X][res[0].Y][res[0].Z] == PvETicTacToeGameGlobals::PlayerColors[1])
+                                if(PvPTicTacToeGameGlobals::stateMatrix[res[0].X][res[0].Y][res[0].Z] == PvPTicTacToeGameGlobals::PlayerColors[1])
                                 {
                                     win = 1;
                                     if(level == 0)
@@ -169,7 +169,7 @@
                                       return 65535;
                                     }
                                 }
-                                else if(PvETicTacToeGameGlobals::stateMatrix[res[0].X][res[0].Y][res[0].Z] == PvETicTacToeGameGlobals::PlayerColors[0])
+                                else if(PvPTicTacToeGameGlobals::stateMatrix[res[0].X][res[0].Y][res[0].Z] == PvPTicTacToeGameGlobals::PlayerColors[0])
                                 {
                                     win = -1;
                                     if(level == 1)
@@ -211,7 +211,7 @@
             fBestTurn.Z = -1;
 
             long*** CopyStateMatrix = GenerateMatrix(3, 3, 3);
-            CopyMatrix(CopyStateMatrix, PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+            CopyMatrix(CopyStateMatrix, PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
 
             long*** WeightMatrix    = GenerateMatrix(3, 3, 3);
 
@@ -263,30 +263,25 @@
         }
     };
 
-    class PvE_TicTacToe_Game : public IGameable
+    class PvP_TicTacToe_Game : public IGameable
     {
     private:
         Player** fPlayer;
         ArtificialIntelligence* AI;
         int8_t fPlayerNum;
     public:
-        PvE_TicTacToe_Game()
+        PvP_TicTacToe_Game()
         {
             fPlayer = new Player*[2];
             for(int i = 0; i < 2; ++i) fPlayer[i] = new Player(i, nullptr);
-
-            AI = new ArtificialIntelligence(fPlayer[1]);
-            Serial.println(F("AI created"));
         }
 
-        ~PvE_TicTacToe_Game()
+        ~PvP_TicTacToe_Game()
         {
             int count = 2;
             for(--count ;count > 0; --count) delete fPlayer[count];
             delete[] fPlayer;
             Serial.println(F("Players deleted"));
-            delete AI;
-            Serial.println(F("AI deleted"));
         }
 
         void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
@@ -304,8 +299,8 @@
         if(fPlayerNum < 0) fPlayerNum = 0;
         if(fPlayerNum > 1) fPlayerNum = 1;
 
-        PvETicTacToeGameGlobals::PlayerColors[0] = FirstColor;
-        PvETicTacToeGameGlobals::PlayerColors[1] = SecondColor;
+        PvPTicTacToeGameGlobals::PlayerColors[0] = FirstColor;
+        PvPTicTacToeGameGlobals::PlayerColors[1] = SecondColor;
 
         fPlayer[0]->fCurrentPosition.X = 1;
         fPlayer[0]->fCurrentPosition.Y = 1;
@@ -324,12 +319,12 @@
         joySticks[0]->ResetClick();
         joySticks[1]->ResetClick();
 
-        PvETicTacToeGameGlobals::stateMatrix = GenerateMatrix(3, 3, 3);
+        PvPTicTacToeGameGlobals::stateMatrix = GenerateMatrix(3, 3, 3);
             long*** VisibleMatrix = GenerateMatrix(3, 3, 3);
 
-        cube->SetPixelColor(PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
-        CopyMatrix(VisibleMatrix, PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
-        VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvETicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]+0x00010101) & 0x00ffffff;
+        cube->SetPixelColor(PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+        CopyMatrix(VisibleMatrix, PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+        VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvPTicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]+0x00010101) & 0x00ffffff;
         cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
         cube->Show();
 
@@ -352,10 +347,10 @@
                     if(fPlayer[0]->TryMakeTurn())
                     {
                         fPlayerNum = 1 - fPlayerNum;
-                        WinCombination = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[0]->fCurrentPosition);
+                        WinCombination = analyzeField(PvPTicTacToeGameGlobals::stateMatrix, fPlayer[0]->fCurrentPosition);
                         if(WinCombination != nullptr)
                         {
-                            PlayerWin = PvETicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
+                            PlayerWin = PvPTicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
                         }
                     }
                 }
@@ -372,13 +367,13 @@
 //                     if(fPlayer[1]->TryMakeTurn())
 //                     {
 //                         fPlayerNum = 1 - fPlayerNum;
-//                         PlayerWin = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
+//                         PlayerWin = analyzeField(PvPTicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
 //                     }
                 fPlayerNum = 1 - fPlayerNum;
-                WinCombination = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
+                WinCombination = analyzeField(PvPTicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
                 if(WinCombination != nullptr)
                 {
-                    PlayerWin = PvETicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
+                    PlayerWin = PvPTicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
                 }
                 break;
             }
@@ -412,16 +407,16 @@
             }
             else
             {
-                if(IsDrawGame(PvETicTacToeGameGlobals::stateMatrix, layer))
+                if(IsDrawGame(PvPTicTacToeGameGlobals::stateMatrix, layer))
                     if(++layer > 2) gameEnd = true;
             }
 
                 //Serial.println("Show");
-                CopyMatrix(VisibleMatrix, PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+                CopyMatrix(VisibleMatrix, PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
                 if(blinkCounter == 0) //0x000F0F0F 0x00010101
-                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvETicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]*10) & 0x00ffffff;
+                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvPTicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]*10) & 0x00ffffff;
                 else
-                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvETicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]*2) & 0x00ffffff;
+                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PvPTicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]*2) & 0x00ffffff;
 
                 cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
                 cube->Show();
@@ -431,11 +426,11 @@
                 if(gameEnd)
                 {
                     Serial.println(F("Game ended"));
-                    CopyMatrix(VisibleMatrix, PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+                    CopyMatrix(VisibleMatrix, PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
                     Serial.println(F("StateMatrix Copy"));
                     for(int8_t i = 0; i < 3; ++i)
                     {
-                        VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PvETicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]+0x000F0F0F) & 0x00ffffff;
+                        VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PvPTicTacToeGameGlobals::PlayerColors[fPlayer[fPlayerNum]->Num]+0x000F0F0F) & 0x00ffffff;
                         cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
                         cube->Show();
 
@@ -449,7 +444,7 @@
 
         FreeMatrix(VisibleMatrix, 3, 3, 3);
         Serial.println(F("Visible Matrix freed"));
-        FreeMatrix(PvETicTacToeGameGlobals::stateMatrix, 3, 3, 3);
+        FreeMatrix(PvPTicTacToeGameGlobals::stateMatrix, 3, 3, 3);
         Serial.println(F("State Matrix freed"));
     }
 #endif
