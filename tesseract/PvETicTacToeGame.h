@@ -7,6 +7,80 @@
 
     long*** stateMatrix;
 
+    Point3D* analyzeField(long*** Matrix, Point3D point)
+    {
+        long& Value = Matrix[point.X][point.Y][point.Z];
+        long LastValue = 0;
+        uint8_t count = 0;
+        Point3D* res = new Point3D[3];
+        for(int8_t i = 0; i < 3; ++i)
+        {
+          res[i].X = 0;
+          res[i].Y = 0;
+          res[i].Z = 0;
+
+        }
+        int8_t X;
+        int8_t Y;
+        int8_t Z;
+
+        for(int8_t dz = -1; dz <= 1; ++dz)
+            for(int8_t dy = -1; dy <= 1; ++dy)
+                for(int8_t dx = -1; dx <= 1; ++dx)
+                    if(dx != 0 || dy != 0 || dz != 0)
+                    {
+                        long LastValue = 0;
+                        count = 0;
+
+                        for(int8_t i = -2; i < 2; ++i)
+                        {
+                            X = point.X + i * dx;
+                            Y = point.Y + i * dy;
+                            Z = point.Z + i * dz;
+
+                            if(X >= 0 && X < 3 &&
+                               Y >= 0 && Y < 3 &&
+                               Z >= 0 && Z < 3)
+                               {
+                                   if (Matrix[X][Y][Z] == LastValue)
+                                   {
+                                       if(LastValue != 0)
+                                       {
+                                           ++count;
+                                           res[count-1].X = X;
+                                           res[count-1].Y = Y;
+                                           res[count-1].Z = Z;
+                                           if(count == 3)
+                                           {
+                                               return res;
+                                           }
+                                       }
+                                   }
+                                   else
+                                   {
+                                       LastValue = Matrix[X][Y][Z];
+                                       count = 1;
+                                       res[count-1].X = X;
+                                       res[count-1].Y = Y;
+                                       res[count-1].Z = Z;
+                                   }
+                               }
+                        }
+                    }
+
+            delete[] res;
+        return nullptr;
+    }
+
+    bool IsDrawGame(long*** Matrix, int8_t& z)
+    {
+        for(int y = 0; y <= 2; ++y)
+            for(int x = 0; x <= 2; ++x)
+                if(Matrix[x][y][z] == 0) return false;
+
+        return true;
+    }
+
     class Player
     {
     public:
@@ -82,7 +156,7 @@
                             point.Y = y;
                             point.Z = z;
 
-                            Point3D* res = PvE_TicTacToe_Game::analyzeField(Matrix, point);
+                            Point3D* res = analyzeField(Matrix, point);
                             if(res != nullptr)
                             {
                                 if(stateMatrix[res[0].X][res[0].Y][res[0].Z] == PlayerColors[1])
@@ -212,80 +286,6 @@
             delete AI;
         }
 
-        Point3D* analyzeField(long*** Matrix, Point3D point)
-        {
-            long& Value = Matrix[point.X][point.Y][point.Z];
-            long LastValue = 0;
-            uint8_t count = 0;
-            Point3D* res = new Point3D[3];
-            for(int8_t i = 0; i < 3; ++i)
-            {
-              res[i].X = 0;
-              res[i].Y = 0;
-              res[i].Z = 0;
-
-            }
-            int8_t X;
-            int8_t Y;
-            int8_t Z;
-
-            for(int8_t dz = -1; dz <= 1; ++dz)
-                for(int8_t dy = -1; dy <= 1; ++dy)
-                    for(int8_t dx = -1; dx <= 1; ++dx)
-                        if(dx != 0 || dy != 0 || dz != 0)
-                        {
-                            long LastValue = 0;
-                            count = 0;
-
-                            for(int8_t i = -2; i < 2; ++i)
-                            {
-                                X = point.X + i * dx;
-                                Y = point.Y + i * dy;
-                                Z = point.Z + i * dz;
-
-                                if(X >= 0 && X < 3 &&
-                                   Y >= 0 && Y < 3 &&
-                                   Z >= 0 && Z < 3)
-                                   {
-                                       if (Matrix[X][Y][Z] == LastValue)
-                                       {
-                                           if(LastValue != 0)
-                                           {
-                                               ++count;
-                                               res[count-1].X = X;
-                                               res[count-1].Y = Y;
-                                               res[count-1].Z = Z;
-                                               if(count == 3)
-                                               {
-                                                   return res;
-                                               }
-                                           }
-                                       }
-                                       else
-                                       {
-                                           LastValue = Matrix[X][Y][Z];
-                                           count = 1;
-                                           res[count-1].X = X;
-                                           res[count-1].Y = Y;
-                                           res[count-1].Z = Z;
-                                       }
-                                   }
-                            }
-                        }
-
-                delete[] res;
-            return nullptr;
-        }
-
-        bool IsDrawGame(long*** Matrix, int8_t& z)
-        {
-            for(int y = 0; y <= 2; ++y)
-                for(int x = 0; x <= 2; ++x)
-                    if(Matrix[x][y][z] == 0) return false;
-
-            return true;
-        }
-
         void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
     };
 
@@ -382,16 +382,16 @@
 
             if(PlayerWin == FirstColor)
             {
-                    //lcd.clear();
-                    //PrintIn(lcd, 0, 2, F("First player"));
-                    //PrintIn(lcd, 1, 6, F("WIN!"));
+                    lcd.clear();
+                    PrintIn(lcd, 0, 2, F("First player"));
+                    PrintIn(lcd, 1, 6, F("WIN!"));
                     if(++layer > 2) gameEnd = true;
             }
             else if(PlayerWin == SecondColor)
             {
-                    //lcd.clear();
-                    //PrintIn(lcd, 0, 2, F("Second player"));
-                    //PrintIn(lcd, 1, 6, F("WIN!"));
+                    lcd.clear();
+                    PrintIn(lcd, 0, 2, F("Second player"));
+                    PrintIn(lcd, 1, 6, F("WIN!"));
                     if(++layer > 2) gameEnd = true;
             }
             else

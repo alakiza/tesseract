@@ -53,7 +53,6 @@
 			{
           
 			    ++fPressCount;
-          //Serial.println(fPressCount);
 
 			    if ( fPressCount >= fMaxPressCountToValid ) 
 			    {
