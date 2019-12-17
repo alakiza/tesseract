@@ -156,6 +156,7 @@
                             point.Y = y;
                             point.Z = z;
 
+                            win = 0;
                             Point3D* res = analyzeField(Matrix, point);
                             if(res != nullptr)
                             {
@@ -279,11 +280,12 @@
 
         ~PvE_TicTacToe_Game()
         {
-            int count = sizeof(fPlayer) / sizeof(Player*);
+            int count = 2;
             for(--count ;count > 0; --count) delete fPlayer[count];
             delete[] fPlayer;
-
+            Serial.println(F("Players deleted"));
             delete AI;
+            Serial.println(F("AI deleted"));
         }
 
         void Run(int FirstPlayer, uint32_t FirstColor, uint32_t SecondColor);
@@ -390,11 +392,11 @@
                     PrintIn(lcd, 1, 6, F("WIN!"));
                     delay(500);
                     lcd.clear();
+
+                    if(++layer > 2) gameEnd = true;
                     PrintIn(lcd, 0, 3, F("Next layer"));
                     delay(500);
                     lcd.clear();
-                    
-                    if(++layer > 2) gameEnd = true;
             }
             else if(PlayerWin == SecondColor)
             {
@@ -403,11 +405,12 @@
                     PrintIn(lcd, 1, 6, F("WIN!"));
                     delay(500);
                     lcd.clear();
+
+                    if(++layer > 2) gameEnd = true;
+
                     PrintIn(lcd, 0, 3, F("Next layer"));
                     delay(500);
                     lcd.clear();
-                    
-                    if(++layer > 2) gameEnd = true;
             }
             else
             {
@@ -434,7 +437,7 @@
                     Serial.println(F("StateMatrix Copy"));
                     for(int8_t i = 0; i < 3; ++i)
                     {
-                        VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00101010) & 0x00ffffff;
+                        VisibleMatrix[WinCombination[i].X][WinCombination[i].Y][WinCombination[i].Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x000F0F0F) & 0x00ffffff;
                         cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
                         cube->Show();
 
@@ -446,8 +449,6 @@
 
         }
 
-        delete AI;
-        Serial.println(F("AI deleted"));
         FreeMatrix(VisibleMatrix, 3, 3, 3);
         Serial.println(F("Visible Matrix freed"));
         FreeMatrix(stateMatrix, 3, 3, 3);
