@@ -340,7 +340,7 @@
             long PlayerWin = 0;
             fPlayer[0]->fCurrentPosition.Z = layer;
 
-            if(++blinkCounter > 4) blinkCounter = 0;
+            if(++blinkCounter > 1) blinkCounter = 0;
 
             switch(fPlayerNum)
             {
@@ -362,8 +362,11 @@
                 break;
             case 1:
                 Serial.println(F("AI thinking"));
+                lcd.clear();
+                PrintIn(lcd, 0, 2, F("AI make turn"));
                 AI->MakeTurn(layer);
                 Serial.println(F("AI make turn"));
+                lcd.clear();
 //                 fPlayer[1]->CheckControls();
 //                 if(fPlayer[1]->fJoyStick->Click())
 //                     if(fPlayer[1]->TryMakeTurn())
@@ -385,6 +388,12 @@
                     lcd.clear();
                     PrintIn(lcd, 0, 2, F("First player"));
                     PrintIn(lcd, 1, 6, F("WIN!"));
+                    delay(500);
+                    lcd.clear();
+                    PrintIn(lcd, 0, 3, F("Next layer"));
+                    delay(500);
+                    lcd.clear();
+                    
                     if(++layer > 2) gameEnd = true;
             }
             else if(PlayerWin == SecondColor)
@@ -392,6 +401,12 @@
                     lcd.clear();
                     PrintIn(lcd, 0, 2, F("Second player"));
                     PrintIn(lcd, 1, 6, F("WIN!"));
+                    delay(500);
+                    lcd.clear();
+                    PrintIn(lcd, 0, 3, F("Next layer"));
+                    delay(500);
+                    lcd.clear();
+                    
                     if(++layer > 2) gameEnd = true;
             }
             else
@@ -402,10 +417,10 @@
 
                 //Serial.println("Show");
                 CopyMatrix(VisibleMatrix, stateMatrix, 3, 3, 3);
-                if(blinkCounter == 0)
-                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x000F0F0F) & 0x00ffffff;
+                if(blinkCounter == 0) //0x000F0F0F 0x00010101
+                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]*10) & 0x00ffffff;
                 else
-                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]+0x00010101) & 0x00ffffff;
+                  VisibleMatrix[fPlayer[fPlayerNum]->fCurrentPosition.X][fPlayer[fPlayerNum]->fCurrentPosition.Y][fPlayer[fPlayerNum]->fCurrentPosition.Z] = (PlayerColors[fPlayer[fPlayerNum]->Num]*2) & 0x00ffffff;
 
                 cube->SetPixelColor(VisibleMatrix, 3, 3, 3);
                 cube->Show();

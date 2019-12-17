@@ -44,7 +44,7 @@ void TimerInterrupt()
 void setup()
 {
     joySticks = new JoyStick*[JOY_STICK_COUNT];
-    for(int i = 0; i < JOY_STICK_COUNT; ++i) joySticks[1-i] = new JoyStick(A0+2*i, A0+1+2*i, 6+i);
+    for(int i = 0; i < JOY_STICK_COUNT; ++i) joySticks[i] = new JoyStick(A0+2*i, A0+1+2*i, 6+i);
 
     visualizer = new Visualizer(8, 27);
     cube = new Cube(3, 3, 3, visualizer);
