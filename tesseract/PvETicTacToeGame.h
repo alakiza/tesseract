@@ -5,90 +5,90 @@
     namespace PvETicTacToeGameGlobals{
         long PlayerColors[2];
         long*** stateMatrix;
-    }
 
-    Point3D* analyzeField(long*** Matrix, Point3D point)
-    {
-        long& Value = Matrix[point.X][point.Y][point.Z];
-        long LastValue = 0;
-        uint8_t count = 0;
-        Point3D* res = new Point3D[3];
-        for(int8_t i = 0; i < 3; ++i)
+        Point3D* analyzeField(long*** Matrix, Point3D point)
         {
-          res[i].X = 0;
-          res[i].Y = 0;
-          res[i].Z = 0;
+            long& Value = Matrix[point.X][point.Y][point.Z];
+            long LastValue = 0;
+            uint8_t count = 0;
+            Point3D* res = new Point3D[3];
+            for(int8_t i = 0; i < 3; ++i)
+            {
+              res[i].X = 0;
+              res[i].Y = 0;
+              res[i].Z = 0;
 
-        }
-        int8_t X;
-        int8_t Y;
-        int8_t Z;
+            }
+            int8_t X;
+            int8_t Y;
+            int8_t Z;
 
-        for(int8_t dz = -1; dz <= 1; ++dz)
-            for(int8_t dy = -1; dy <= 1; ++dy)
-                for(int8_t dx = -1; dx <= 1; ++dx)
-                    if(dx != 0 || dy != 0 || dz != 0)
-                    {
-                        long LastValue = 0;
-                        count = 0;
-
-                        for(int8_t i = -2; i < 2; ++i)
+            for(int8_t dz = -1; dz <= 1; ++dz)
+                for(int8_t dy = -1; dy <= 1; ++dy)
+                    for(int8_t dx = -1; dx <= 1; ++dx)
+                        if(dx != 0 || dy != 0 || dz != 0)
                         {
-                            X = point.X + i * dx;
-                            Y = point.Y + i * dy;
-                            Z = point.Z + i * dz;
+                            long LastValue = 0;
+                            count = 0;
 
-                            if(X >= 0 && X < 3 &&
-                               Y >= 0 && Y < 3 &&
-                               Z >= 0 && Z < 3)
-                               {
-                                   if (Matrix[X][Y][Z] == LastValue)
+                            for(int8_t i = -2; i < 2; ++i)
+                            {
+                                X = point.X + i * dx;
+                                Y = point.Y + i * dy;
+                                Z = point.Z + i * dz;
+
+                                if(X >= 0 && X < 3 &&
+                                   Y >= 0 && Y < 3 &&
+                                   Z >= 0 && Z < 3)
                                    {
-                                       if(LastValue != 0)
+                                       if (Matrix[X][Y][Z] == LastValue)
                                        {
-                                           ++count;
+                                           if(LastValue != 0)
+                                           {
+                                               ++count;
+                                               res[count-1].X = X;
+                                               res[count-1].Y = Y;
+                                               res[count-1].Z = Z;
+                                               if(count == 3)
+                                               {
+                                                   return res;
+                                               }
+                                           }
+                                       }
+                                       else
+                                       {
+                                           LastValue = Matrix[X][Y][Z];
+                                           count = 1;
                                            res[count-1].X = X;
                                            res[count-1].Y = Y;
                                            res[count-1].Z = Z;
-                                           if(count == 3)
-                                           {
-                                               return res;
-                                           }
                                        }
                                    }
-                                   else
-                                   {
-                                       LastValue = Matrix[X][Y][Z];
-                                       count = 1;
-                                       res[count-1].X = X;
-                                       res[count-1].Y = Y;
-                                       res[count-1].Z = Z;
-                                   }
-                               }
+                            }
                         }
-                    }
 
-            delete[] res;
-        return nullptr;
+                delete[] res;
+            return nullptr;
+        }
+
+        bool IsDrawGame(long*** Matrix, int8_t& z)
+        {
+            for(int y = 0; y <= 2; ++y)
+                for(int x = 0; x <= 2; ++x)
+                    if(Matrix[x][y][z] == 0) return false;
+
+            return true;
+        }
     }
 
-    bool IsDrawGame(long*** Matrix, int8_t& z)
-    {
-        for(int y = 0; y <= 2; ++y)
-            for(int x = 0; x <= 2; ++x)
-                if(Matrix[x][y][z] == 0) return false;
-
-        return true;
-    }
-
-    class Player
+    class PvE_Player
     {
     public:
         int8_t Num;
         Point3D fCurrentPosition;
         JoyStick* fJoyStick;
 
-        Player(int8_t aNum, JoyStick* aJoyStick)
+        PvE_Player(int8_t aNum, JoyStick* aJoyStick)
         {
             Num = aNum;
             fJoyStick = aJoyStick;
@@ -124,7 +124,7 @@
             return false;
         }
 
-        ~Player()
+        ~PvE_Player()
         {
 
         }
@@ -135,7 +135,7 @@
     {
     private:
         Point3D fBestTurn;
-        Player* fPlayer;
+        PvE_Player* fPlayer;
 
         long Calculate(long*** Matrix, uint8_t level, uint8_t MaxLevel, uint8_t& z, int8_t player)
         {
@@ -157,7 +157,7 @@
                             point.Z = z;
 
                             win = 0;
-                            Point3D* res = analyzeField(Matrix, point);
+                            Point3D* res = PvETicTacToeGameGlobals::analyzeField(Matrix, point);
                             if(res != nullptr)
                             {
                                 if(PvETicTacToeGameGlobals::stateMatrix[res[0].X][res[0].Y][res[0].Z] == PvETicTacToeGameGlobals::PlayerColors[1])
@@ -199,7 +199,7 @@
         }
     public:
 
-        ArtificialIntelligence(Player* player)
+        ArtificialIntelligence(PvE_Player* player)
         {
             fPlayer = player;
         }
@@ -266,14 +266,14 @@
     class PvE_TicTacToe_Game : public IGameable
     {
     private:
-        Player** fPlayer;
+        PvE_Player** fPlayer;
         ArtificialIntelligence* AI;
         int8_t fPlayerNum;
     public:
         PvE_TicTacToe_Game()
         {
-            fPlayer = new Player*[2];
-            for(int i = 0; i < 2; ++i) fPlayer[i] = new Player(i, nullptr);
+            fPlayer = new PvE_Player*[2];
+            for(int i = 0; i < 2; ++i) fPlayer[i] = new PvE_Player(i, nullptr);
 
             AI = new ArtificialIntelligence(fPlayer[1]);
             Serial.println(F("AI created"));
@@ -281,8 +281,7 @@
 
         ~PvE_TicTacToe_Game()
         {
-            int count = 2;
-            for(--count ;count > 0; --count) delete fPlayer[count];
+            for(int count = 1 ;count >= 0; --count) delete fPlayer[count];
             delete[] fPlayer;
             Serial.println(F("Players deleted"));
             delete AI;
@@ -324,6 +323,8 @@
         joySticks[0]->ResetClick();
         joySticks[1]->ResetClick();
 
+        delay(100);
+
         PvETicTacToeGameGlobals::stateMatrix = GenerateMatrix(3, 3, 3);
             long*** VisibleMatrix = GenerateMatrix(3, 3, 3);
 
@@ -352,7 +353,7 @@
                     if(fPlayer[0]->TryMakeTurn())
                     {
                         fPlayerNum = 1 - fPlayerNum;
-                        WinCombination = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[0]->fCurrentPosition);
+                        WinCombination = PvETicTacToeGameGlobals::analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[0]->fCurrentPosition);
                         if(WinCombination != nullptr)
                         {
                             PlayerWin = PvETicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
@@ -367,15 +368,8 @@
                 AI->MakeTurn(layer);
                 Serial.println(F("AI make turn"));
                 lcd.clear();
-//                 fPlayer[1]->CheckControls();
-//                 if(fPlayer[1]->fJoyStick->Click())
-//                     if(fPlayer[1]->TryMakeTurn())
-//                     {
-//                         fPlayerNum = 1 - fPlayerNum;
-//                         PlayerWin = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
-//                     }
                 fPlayerNum = 1 - fPlayerNum;
-                WinCombination = analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
+                WinCombination = PvETicTacToeGameGlobals::analyzeField(PvETicTacToeGameGlobals::stateMatrix, fPlayer[1]->fCurrentPosition);
                 if(WinCombination != nullptr)
                 {
                     PlayerWin = PvETicTacToeGameGlobals::stateMatrix[WinCombination[0].X][WinCombination[0].Y][WinCombination[0].Z];
@@ -412,7 +406,7 @@
             }
             else
             {
-                if(IsDrawGame(PvETicTacToeGameGlobals::stateMatrix, layer))
+                if(PvETicTacToeGameGlobals::IsDrawGame(PvETicTacToeGameGlobals::stateMatrix, layer))
                     if(++layer > 2) gameEnd = true;
             }
 

@@ -44,7 +44,9 @@ void TimerInterrupt()
 void setup()
 {
     joySticks = new JoyStick*[JOY_STICK_COUNT];
-    for(int i = 0; i < JOY_STICK_COUNT; ++i) joySticks[i] = new JoyStick(A0+2*i, A0+1+2*i, 6+i);
+    // for(int i = 0; i < JOY_STICK_COUNT; ++i) joySticks[i] = new JoyStick(A0+2*i, A0+1+2*i, 6+i);
+    joySticks[0] = new JoyStick(A0, A1, 6);
+    joySticks[1] = new JoyStick(A3, A2, 7);
 
     visualizer = new Visualizer(8, 27);
     cube = new Cube(3, 3, 3, visualizer);
@@ -64,11 +66,32 @@ void setup()
 
 void loop()
 {
+    uint8_t GameCount = 2;
+    uint8_t SelectedGame = 0;
+    String* GameTitleArray = new String[2];
+    GameTitleArray[0] = F("1  PvE TicTaeToe");
+    GameTitleArray[1] = F("2  PvP TicTaeToe");
+
+    lcd.clear();
+    joySticks[0]->ResetClick();
+    while(!joySticks[0]->Pressed())
+    {
+        if(joySticks[0]->AxisX() > 480) ++SelectedGame;
+        if(joySticks[0]->AxisX() < -480) --SelectedGame;
+        if(SelectedGame < 0) SelectedGame = GameCount - 1;
+        if(SelectedGame >= GameCount) SelectedGame = 0;
+        PrintIn(lcd, 0, 0, F("Select game"));
+        PrintIn(lcd, 1, 0, GameTitleArray[SelectedGame]);
+        delay(250);
+    }
+    delete[] GameTitleArray;
+    lcd.clear();
+
     IToss* toos = FactoryToos::Get();
     int res = toos->Run();
     delete toos;
 
-    IGameable* game = FactoryGames::Get(0);
+    IGameable* game = FactoryGames::Get(SelectedGame);
     Serial.println(F("Game created"));
     game->Run(res, 0x00000700, 0x00070000);
     delete game;

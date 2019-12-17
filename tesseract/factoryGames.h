@@ -2,6 +2,7 @@
 #define FACTORYGAMES_H
 #include "IGameable.h"
 #include "PvETicTacToeGame.h"
+#include "PvPTicTacToeGame.h"
 
     class FactoryGames
     {
@@ -14,6 +15,7 @@
                     return new PvE_TicTacToe_Game();
                     break;
                 case 1:
+                    return new PvP_TicTacToe_Game();
                     break;
             }
         }
