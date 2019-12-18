@@ -66,11 +66,12 @@ void setup()
 
 void loop()
 {
-    uint8_t GameCount = 2;
+    const uint8_t GameCount = 3;
     uint8_t SelectedGame = 0;
-    String* GameTitleArray = new String[2];
+    String* GameTitleArray = new String[GameCount];
     GameTitleArray[0] = F("1  PvE TicTaeToe");
     GameTitleArray[1] = F("2  PvP TicTaeToe");
+    GameTitleArray[2] = F("3  ClickTimeTest");
 
     lcd.clear();
     joySticks[0]->ResetClick();

@@ -18,7 +18,7 @@ public:
     }
     return res;
   }
- 
+
 };
 
 //IToss* FactoryToos::Get()
